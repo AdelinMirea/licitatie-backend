@@ -1,6 +1,8 @@
 # Licitatie
 Partea de back-end a Proiectului Colictiv cu tema "Licitatie"
 
+Orice pull request trebuie, pe langa functionalitate, sa aiba si testele aferente (atat unittest cat si integration test).
+
 Iteratii:
 
 -    Functionalitate de login, sign-up si verificare cont prin mail 
@@ -12,3 +14,4 @@ Iteratii:
 -    Creerea de comentarii la licitatii. 
 -    Inchiderea de licitatie (lucru care sa se reflecte in pagina acesteia) 
 -    Adaugarea ratingului la un utilizator, daca scade sub 3 nu mai poate creea licitatii, daca scade sub 2 I se va bloca contul temporar 
+ 
