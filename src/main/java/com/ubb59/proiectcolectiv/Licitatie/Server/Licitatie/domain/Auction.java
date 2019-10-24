@@ -25,7 +25,4 @@ public class Auction {
     private Bid winningBid;
     @ManyToOne
     private User owner;
-    @ToString.Exclude
-    @OneToOne
-    private Post post;
 }

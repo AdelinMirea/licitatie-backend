@@ -19,11 +19,13 @@ public class User {
     private Integer id;
     private String firstName;
     private String lastName;
+    @Column(unique = true)
     private String mail;
     private String password;
     private Boolean verified;
     private Date lastActive;
-    private Integer rating;
+    private Double rating;
+    private Integer numberOfRatings;
     @ToString.Exclude
     @OneToMany
     private List<Bid> bids;
