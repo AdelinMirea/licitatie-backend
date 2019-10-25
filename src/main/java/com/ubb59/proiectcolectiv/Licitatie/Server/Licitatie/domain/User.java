@@ -26,6 +26,7 @@ public class User {
     private Date lastActive;
     private Double rating;
     private Integer numberOfRatings;
+    private Double numberOfCredits;
     @ToString.Exclude
     @OneToMany
     private List<Bid> bids;
