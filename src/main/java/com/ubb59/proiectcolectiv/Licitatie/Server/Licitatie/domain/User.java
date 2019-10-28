@@ -22,7 +22,7 @@ public class User {
     @Column(unique = true)
     private String mail;
     private String password;
-    private String hashKey;
+    private String userToken;
     private Boolean verified;
     private Date lastActive;
     private Double rating;
