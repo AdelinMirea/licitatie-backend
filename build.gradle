@@ -4,6 +4,8 @@ plugins {
 	id 'java'
 }
 
+apply plugin: 'idea'
+
 group = 'com.ubb.235.2019.proiect-colectiv.Licitatie'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
@@ -34,4 +36,5 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
 }
