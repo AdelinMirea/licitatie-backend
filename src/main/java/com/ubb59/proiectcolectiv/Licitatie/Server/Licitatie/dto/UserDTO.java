@@ -1,21 +1,12 @@
-package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain;
+package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
-@Entity
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UserDTO {
     @Getter
     @Setter
     private Integer id;
@@ -25,16 +16,9 @@ public class User {
     @Getter
     @Setter
     private String lastName;
-    @Column(unique = true)
     @Getter
     @Setter
     private String mail;
-    @Getter
-    @Setter
-    private String password;
-    @Getter
-    @Setter
-    private String userToken;
     @Getter
     @Setter
     private Boolean verified;
@@ -50,19 +34,13 @@ public class User {
     @Getter
     @Setter
     private Double numberOfCredits;
-    @ToString.Exclude
-    @OneToMany
     @Getter
     @Setter
-    private List<Bid> bids;
-    @ToString.Exclude
-    @OneToMany
+    private List<Integer> bidsIds;
     @Getter
     @Setter
-    private List<Auction> auctions;
-    @ToString.Exclude
-    @OneToMany
+    private List<Integer> auctionsIds;
     @Getter
     @Setter
-    private List<Comment> comments;
+    private List<Integer> commentsIds;
 }
