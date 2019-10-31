@@ -4,6 +4,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
@@ -12,7 +13,11 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -87,5 +92,30 @@ public class DTOUtils {
         updatedUser.setAuctions(auctions);
         updatedUser.setComments(comments);
         return updatedUser;
+    }
+
+    public User createUserFromAuthentication(AuthenticationDTO authenticationDTO, String token){
+        Optional<User> userOptional = userRepository.findByMail(authenticationDTO.getMail());
+        if(userOptional.isPresent()){
+            return null;
+        }else{
+            User user = new User();
+            user.setId(0);
+            user.setFirstName(authenticationDTO.getFirstName());
+            user.setLastName(authenticationDTO.getLastName());
+            user.setPassword(authenticationDTO.getPassword());
+            user.setMail(authenticationDTO.getMail());
+            user.setVerified(false);
+            user.setNumberOfCredits(0d);
+            user.setRating(0d);
+            user.setNumberOfRatings(0);
+            //arbitrary date, we should know somehow that the user is new in the system
+            user.setLastActive(Date.valueOf(LocalDate.of(2000, 1, 1)));
+            user.setUserToken(token);
+            user.setAuctions(new ArrayList<>());
+            user.setBids(new ArrayList<>());
+            user.setComments(new ArrayList<>());
+            return user;
+        }
     }
 }
