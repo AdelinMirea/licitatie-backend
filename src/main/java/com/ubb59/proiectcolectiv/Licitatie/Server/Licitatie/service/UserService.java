@@ -23,7 +23,7 @@ public class UserService {
     }
 
     public User addUser(User user) throws DataValidationException {
-        if (userRepository.getByMail(user.getMail()) != null) {
+        if (!userRepository.findAllByMailEquals(user.getMail()).isEmpty()) {
             throw new EntityExistsException("User already exists");
         }
         validator.validateUser(user);

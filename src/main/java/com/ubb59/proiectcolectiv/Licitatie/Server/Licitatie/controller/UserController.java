@@ -1,8 +1,11 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.UserService;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,19 +22,21 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+    private DTOUtils dtoUtils;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DTOUtils dtoUtils) {
         this.userService = userService;
+        this.dtoUtils = dtoUtils;
     }
 
     @PostMapping({"/users"})
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    public ResponseEntity<UserDTO> addUser(@RequestBody AuthenticationDTO authenticationDTO) {
         try {
             String userToken = String.valueOf(System.currentTimeMillis());
-            user.setUserToken(userToken);
+            User user = dtoUtils.createUserFromAuthentication(authenticationDTO, userToken);
             user = userService.addUser(user);
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return new ResponseEntity<>(dtoUtils.userToUserDTO(user), HttpStatus.OK);
         } catch (DataValidationException e) {
             return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (EntityExistsException e) {

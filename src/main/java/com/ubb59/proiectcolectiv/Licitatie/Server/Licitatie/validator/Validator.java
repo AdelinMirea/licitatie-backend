@@ -14,7 +14,11 @@ public class Validator {
                 || user.getNumberOfRatings() == null
                 || user.getVerified() == null
                 || user.getPassword() == null
-                || user.getUserToken() == null) {
+                || user.getUserToken() == null
+                || user.getComments() == null
+                || user.getBids() == null
+                || user.getRating() == null
+                || user.getAuctions() == null) {
             throw new DataValidationException("User must have no null fields");
         }
         if (user.getFirstName().isEmpty() || user.getLastName().isEmpty()) {

@@ -1,7 +1,6 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.configuration.H2TestProfileJPAConfig;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
@@ -24,8 +23,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
-        ServerLicitatieApplication.class,
-        H2TestProfileJPAConfig.class})
+        ServerLicitatieApplication.class})
 public class UserDTOTests {
 
     private User user;
@@ -78,7 +76,7 @@ public class UserDTOTests {
     }
 
     @Test
-    public void testUserToUserDTO() {
+    public void userToUserDTO() {
         UserDTO userDTO = dtoUtils.userToUserDTO(user);
         assertThat(userDTO.getId(),is(1));
         assertThat(userDTO.getFirstName(),is("a"));
@@ -95,7 +93,7 @@ public class UserDTOTests {
     }
 
     @Test
-    public void testUpdateUserByUserDTO(){
+    public void updateUserByUserDTO(){
         setupUserDTO();
         User newUser = dtoUtils.updateUserByUserDTO(user, userDto, Collections.singletonList(bid),
                 Collections.singletonList(auction), Collections.singletonList(comment));
