@@ -5,10 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 @Transactional
 public interface UserRepository extends JpaRepository<User, Integer> {
-    Optional<User> findByMail(String mail);
+    List<User> findAllByMailEquals(String mail);
 }

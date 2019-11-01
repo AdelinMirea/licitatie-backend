@@ -13,11 +13,11 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityExistsException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -95,9 +95,9 @@ public class DTOUtils {
     }
 
     public User createUserFromAuthentication(AuthenticationDTO authenticationDTO, String token){
-        Optional<User> userOptional = userRepository.findByMail(authenticationDTO.getMail());
-        if(userOptional.isPresent()){
-            return null;
+        List<User> users = userRepository.findAllByMailEquals(authenticationDTO.getMail());
+        if(!users.isEmpty()){
+            throw new EntityExistsException("A user with this e-mail address already exists");
         }else{
             User user = new User();
             user.setId(0);

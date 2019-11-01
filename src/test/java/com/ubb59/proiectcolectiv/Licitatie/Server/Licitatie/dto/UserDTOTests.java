@@ -1,5 +1,7 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto;
 
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.configuration.H2TestProfileJPAConfig;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
@@ -21,7 +23,9 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        ServerLicitatieApplication.class,
+        H2TestProfileJPAConfig.class})
 public class UserDTOTests {
 
     private User user;
