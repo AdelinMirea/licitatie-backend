@@ -1,5 +1,7 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto;
 
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.configuration.H2TestProfileJPAConfig;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
@@ -12,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.jws.soap.SOAPBinding;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +23,9 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {
+        ServerLicitatieApplication.class,
+        H2TestProfileJPAConfig.class})
 public class UserDTOTests {
 
     private User user;
