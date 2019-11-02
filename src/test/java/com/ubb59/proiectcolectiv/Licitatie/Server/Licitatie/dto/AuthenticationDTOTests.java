@@ -1,7 +1,6 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.configuration.H2TestProfileJPAConfig;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
@@ -21,8 +20,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
-        ServerLicitatieApplication.class,
-        H2TestProfileJPAConfig.class})
+        ServerLicitatieApplication.class})
 public class AuthenticationDTOTests {
 
     private AuthenticationDTO authentication;
@@ -41,7 +39,7 @@ public class AuthenticationDTOTests {
     }
 
     @Test
-    public void testConversionFromAuthenticationToUser(){
+    public void conversionFromAuthenticationToUser(){
         User createdUser = dtoUtils.createUserFromAuthentication(authentication, "0101");
         assertThat(createdUser.getId(), is(0));
         assertThat(createdUser.getFirstName(), is("Marcel"));
@@ -60,7 +58,7 @@ public class AuthenticationDTOTests {
     }
 
     @Test(expected = EntityExistsException.class)
-    public void testAlreadyExistingUser(){
+    public void alreadyExistingUser(){
         User user = new User();
         user.setMail("Marcel@mail.com");
         userRepository.save(user);
