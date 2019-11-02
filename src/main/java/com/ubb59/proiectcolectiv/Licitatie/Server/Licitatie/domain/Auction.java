@@ -25,4 +25,5 @@ public class Auction {
     private Bid winningBid;
     @ManyToOne
     private User owner;
+    Location location;
 }
