@@ -7,24 +7,17 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.List;
 
+@Entity
 @Getter
 @Setter
 @ToString
-@Entity
-public class Auction {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String title;
-    private String description;
-    @ToString.Exclude
+    private String name;
     @OneToMany
-    private List<Bid> bids;
-    @OneToOne
-    private Bid winningBid;
-    @ManyToOne
-    private User owner;
-    @ManyToOne
-    private Category category;
+    private List<Auction> auctions;
+
 }
