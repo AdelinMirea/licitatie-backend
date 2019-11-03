@@ -1,15 +1,10 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util;
 
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.*;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CommentRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,16 +22,18 @@ public class DTOUtils {
     private final BidRepository bidRepository;
     private final AuctionRepository auctionRepository;
     private final CommentRepository commentRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public DTOUtils(UserRepository userRepository, BidRepository bidRepository, AuctionRepository auctionRepository, CommentRepository commentRepository) {
+    public DTOUtils(UserRepository userRepository, BidRepository bidRepository, AuctionRepository auctionRepository, CommentRepository commentRepository, CategoryRepository categoryRepository) {
         this.userRepository = userRepository;
         this.bidRepository = bidRepository;
         this.auctionRepository = auctionRepository;
         this.commentRepository = commentRepository;
+        this.categoryRepository = categoryRepository;
     }
 
-    public UserDTO userToUserDTO(User user){
+    public UserDTO userToUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setFirstName(user.getFirstName());
@@ -63,19 +60,19 @@ public class DTOUtils {
     }
 
     /**
-    Finds user with the same id as userDTO, updates the other fields and returns it.
-    If there is no user with such id, returns @null.
-    */
-    public User userDTOToUser(UserDTO userDTO){
+     * Finds user with the same id as userDTO, updates the other fields and returns it.
+     * If there is no user with such id, returns @null.
+     */
+    public User userDTOToUser(UserDTO userDTO) {
         User user = userRepository.getOne(userDTO.getId());
-        if(user == null){
+        if (user == null) {
             return null;
         }
         return updateUserByUserDTO(user, userDTO, bidRepository.findAllById(userDTO.getBidsIds()),
                 auctionRepository.findAllById(userDTO.getAuctionsIds()), commentRepository.findAllById(userDTO.getCommentsIds()));
     }
 
-    public User updateUserByUserDTO(User user, UserDTO userDTO, List<Bid> bids, List<Auction> auctions, List<Comment> comments){
+    public User updateUserByUserDTO(User user, UserDTO userDTO, List<Bid> bids, List<Auction> auctions, List<Comment> comments) {
         User updatedUser = new User();
         updatedUser.setPassword(user.getPassword());
         updatedUser.setUserToken(user.getUserToken());
@@ -94,11 +91,11 @@ public class DTOUtils {
         return updatedUser;
     }
 
-    public User createUserFromAuthentication(AuthenticationDTO authenticationDTO, String token){
+    public User createUserFromAuthentication(AuthenticationDTO authenticationDTO, String token) {
         List<User> users = userRepository.findAllByMailEquals(authenticationDTO.getMail());
-        if(!users.isEmpty()){
+        if (!users.isEmpty()) {
             throw new EntityExistsException("A user with this e-mail address already exists");
-        }else{
+        } else {
             User user = new User();
             user.setId(0);
             user.setFirstName(authenticationDTO.getFirstName());
@@ -118,4 +115,53 @@ public class DTOUtils {
             return user;
         }
     }
+
+
+    /**
+     * Finds auction with the same id as auctionDTO, updates the other fields and returns it.
+     * If there is no auction with such id, returns @null.
+     */
+    public Auction auctionDTOToAuction(AuctionDTO auctionDTO) {
+        Auction auction = auctionRepository.getOne(auctionDTO.getId());
+        if (auction == null) {
+            return null;
+        }
+        User owner = userRepository.getOne(auctionDTO.getOwnerId());
+        Bid winningBid = bidRepository.getOne(auctionDTO.getWinningBidId());
+        Category category = categoryRepository.getOne(auctionDTO.getCategoryId());
+        List<Bid> bids = bidRepository.findAllById(auctionDTO.getBidsIds());
+        auction = updateAuctionByAuctionDTO(auction, auctionDTO, owner, winningBid, category, bids);
+        return auction;
+    }
+
+    public Auction updateAuctionByAuctionDTO(Auction auction, AuctionDTO auctionDTO, User owner, Bid winningBid, Category category, List<Bid> bids) {
+        Auction updatedAuction = new Auction();
+        updatedAuction.setId(auction.getId());
+        updatedAuction.setTitle(auctionDTO.getTitle());
+        updatedAuction.setDescription(auctionDTO.getDescription());
+        updatedAuction.setOwner(owner);
+        updatedAuction.setWinningBid(winningBid);
+        updatedAuction.setCategory(category);
+        updatedAuction.setBids(bids);
+        return updatedAuction;
+    }
+
+    /**
+     * Convert auction to AuctionDTO
+     */
+    public AuctionDTO auctionToAuctionDTO(Auction auction) {
+        AuctionDTO auctionDTO = new AuctionDTO();
+        auctionDTO.setId(auction.getId());
+        auctionDTO.setTitle(auction.getTitle());
+        auctionDTO.setDescription(auction.getDescription());
+        auctionDTO.setOwnerId(auction.getOwner().getId());
+        auctionDTO.setCategoryId(auction.getCategory().getId());
+        auctionDTO.setWinningBidId(auction.getWinningBid().getId());
+        List<Integer> bidsIds = auction.getBids().stream()
+                .map(Bid::getId)
+                .collect(Collectors.toList());
+        auctionDTO.setBidsIds(bidsIds);
+        return auctionDTO;
+    }
+
 }
