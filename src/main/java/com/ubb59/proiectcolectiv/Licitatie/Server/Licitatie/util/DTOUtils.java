@@ -136,6 +136,9 @@ public class DTOUtils {
 
     public Auction updateAuctionByAuctionDTO(Auction auction, AuctionDTO auctionDTO, User owner, Bid winningBid, Category category, List<Bid> bids) {
         Auction updatedAuction = new Auction();
+        if(auctionDTO.getDateAdded() == null){
+            updatedAuction.setDateAdded(Date.valueOf(LocalDate.now()));
+        }
         updatedAuction.setId(auction.getId());
         updatedAuction.setTitle(auctionDTO.getTitle());
         updatedAuction.setDescription(auctionDTO.getDescription());
@@ -154,6 +157,7 @@ public class DTOUtils {
         auctionDTO.setId(auction.getId());
         auctionDTO.setTitle(auction.getTitle());
         auctionDTO.setDescription(auction.getDescription());
+        auctionDTO.setDateAdded(auction.getDateAdded());
         auctionDTO.setOwnerId(auction.getOwner().getId());
         auctionDTO.setCategoryId(auction.getCategory().getId());
         auctionDTO.setWinningBidId(auction.getWinningBid().getId());
