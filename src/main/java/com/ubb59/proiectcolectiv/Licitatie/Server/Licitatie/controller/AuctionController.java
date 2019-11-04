@@ -28,10 +28,10 @@ public class AuctionController {
 
     @GetMapping("/auctions")
     public ResponseEntity<?> getAllAuctions(
-            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy, // TODO change to "dateAdded"
-            @RequestParam(name = "filter", defaultValue = "") String filter,
-            @RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "itemNumber", defaultValue = "10") Integer itemNumber
+            @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy, // TODO change to "dateAdded"
+            @RequestParam(name = "filter", defaultValue = "", required = false) String filter,
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+            @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber
     ){
         List<AuctionDTO> auctions = auctionService.findAllSortedAndFiltered(sortBy, filter, page, itemNumber);
         return new ResponseEntity<>(auctions, HttpStatus.OK);
