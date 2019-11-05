@@ -2,6 +2,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +30,9 @@ public class UserServiceTests {
 
     private User user1;
     private User user2;
+
     @Before
-    public void setupUsers(){
+    public void setupUsers() {
         user1 = new User();
         user1.setUserToken("1");
         user1.setPassword("123456");
@@ -64,9 +66,9 @@ public class UserServiceTests {
     @Test
     public void addUser() throws DataValidationException {
         User addedUser = userService.addUser(user1);
-        assertThat(addedUser.getMail(),is(user1.getMail()));
+        assertThat(addedUser.getMail(), is(user1.getMail()));
         User addedUser2 = userService.addUser(user2);
-        assertThat(addedUser2.getMail(),is(user2.getMail()));
+        assertThat(addedUser2.getMail(), is(user2.getMail()));
     }
 
     @Test(expected = EntityExistsException.class)
@@ -93,5 +95,27 @@ public class UserServiceTests {
     public void addUserInvalidPassword() throws DataValidationException {
         user1.setPassword("12345");
         userService.addUser(user1);
+    }
+
+    @Test
+    public void getUserTokenByCredentials() throws DataValidationException, AuthenticationException {
+        String password = user1.getPassword();
+        userService.addUser(user1);
+        String token = userService.getUserTokenByCredentials(user1.getMail(), password);
+        assertThat(token, is(user1.getUserToken()));
+    }
+
+    @Test(expected = AuthenticationException.class)
+    public void getUserTokenByCredentialsUserNotFound() throws DataValidationException, AuthenticationException {
+        String password = user1.getPassword();
+        userService.addUser(user1);
+        userService.getUserTokenByCredentials(user1.getMail() + "wrong", password);
+    }
+
+    @Test(expected = AuthenticationException.class)
+    public void getUserTokenByCredentialsWrongPassword() throws DataValidationException, AuthenticationException {
+        String password = user1.getPassword();
+        userService.addUser(user1);
+        userService.getUserTokenByCredentials(user1.getMail(), password + "wrong");
     }
 }
