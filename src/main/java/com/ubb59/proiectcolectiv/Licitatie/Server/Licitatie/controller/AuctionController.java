@@ -28,7 +28,7 @@ public class AuctionController {
 
     @GetMapping("/auctions")
     public ResponseEntity<?> getAllAuctions(
-            @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy, // TODO change to "dateAdded"
+            @RequestParam(name = "sortBy", defaultValue = "dateAdded", required = false) String sortBy,
             @RequestParam(name = "filter", defaultValue = "", required = false) String filter,
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber

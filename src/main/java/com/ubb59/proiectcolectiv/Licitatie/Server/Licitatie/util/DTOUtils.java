@@ -162,7 +162,9 @@ public class DTOUtils {
         auctionDTO.setDateAdded(auction.getDateAdded());
         auctionDTO.setOwnerId(auction.getOwner().getId());
         auctionDTO.setCategoryId(auction.getCategory().getId());
-        auctionDTO.setWinningBidId(auction.getWinningBid().getId());
+        if(auction.getWinningBid() != null){
+            auctionDTO.setWinningBidId(auction.getWinningBid().getId());
+        }
         List<Integer> bidsIds = auction.getBids().stream()
                 .map(Bid::getId)
                 .collect(Collectors.toList());

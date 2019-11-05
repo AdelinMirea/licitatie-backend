@@ -37,7 +37,7 @@ public class AuctionService {
     public List<AuctionDTO> findAllSortedAndFiltered(String sortBy, String filter, Integer page, Integer itemNumber) {
         log.info("Entered method to get all auctions with parameters sortBy {}, filter {}, page {} and idemNumber {}", sortBy, filter, page, itemNumber);
         List<Category> categories = categoryRepository.findAllByNameContaining(filter);
-        List<Auction> auctions = auctionRepository.findAllByTitleContainingOrDescriptionContainingOrCategoryIn(filter, filter, categories, PageRequest.of(page , itemNumber, Sort.by(sortBy)));
+        List<Auction> auctions = auctionRepository.findAllByTitleContainingOrDescriptionContainingOrCategoryIn(filter, filter, categories, PageRequest.of(page , itemNumber, Sort.by(Sort.Direction.DESC, sortBy)));
         return auctions.parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
     }
 
