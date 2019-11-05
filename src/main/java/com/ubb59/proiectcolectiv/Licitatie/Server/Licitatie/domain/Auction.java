@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.util.List;
 
 @Getter
@@ -18,6 +19,8 @@ public class Auction {
     private Integer id;
     private String title;
     private String description;
+    private Date dateAdded;
+    private Boolean closed;
     @ToString.Exclude
     @OneToMany
     private List<Bid> bids;

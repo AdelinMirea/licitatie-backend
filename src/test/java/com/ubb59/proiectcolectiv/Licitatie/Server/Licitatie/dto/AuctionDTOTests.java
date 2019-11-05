@@ -64,6 +64,7 @@ public class AuctionDTOTests {
         auction = new Auction();
         auction.setId(1);
         auction.setTitle("Auction");
+        auction.setClosed(true);
         auction.setDescription("Auction description");
         auction.setWinningBid(bid1);
         auction.setOwner(owner);
@@ -75,6 +76,7 @@ public class AuctionDTOTests {
         auctionDTO.setTitle("AuctionDTO");
         auctionDTO.setDescription("AuctionDTO description");
         auctionDTO.setWinningBidId(2);
+        auctionDTO.setClosed(false);
         auctionDTO.setOwnerId(2);
         auctionDTO.setCategoryId(2);
         auctionDTO.setBidsIds(Collections.singletonList(2));
@@ -90,6 +92,7 @@ public class AuctionDTOTests {
         assertThat(auctionDTO.getWinningBidId(), is(2));
         assertThat(auctionDTO.getOwnerId(), is(2));
         assertThat(auctionDTO.getBidsIds().size(), is(1));
+        assertThat(auctionDTO.getClosed(), is(false));
 
         auctionDTO = dtoUtils.auctionToAuctionDTO(auction);
 
@@ -100,6 +103,7 @@ public class AuctionDTOTests {
         assertThat(auctionDTO.getWinningBidId(), is(1));
         assertThat(auctionDTO.getOwnerId(), is(1));
         assertThat(auctionDTO.getBidsIds().size(), is(2));
+        assertThat(auctionDTO.getClosed(), is(true));
 
     }
 
@@ -113,7 +117,9 @@ public class AuctionDTOTests {
         assertThat(auction.getWinningBid().getId(), is(1));
         assertThat(auction.getOwner().getId(), is(1));
         assertThat(auction.getBids().size(), is(2));
+        assertThat(auction.getClosed(), is(true));
 
+        auctionDTO.setClosed(false);
         auction = dtoUtils.updateAuctionByAuctionDTO(auction, auctionDTO, owner2, bid2, category2, bids2);
 
         assertThat(auction.getId(), is(1));
@@ -123,6 +129,6 @@ public class AuctionDTOTests {
         assertThat(auction.getWinningBid().getId(), is(2));
         assertThat(auction.getOwner().getId(), is(2));
         assertThat(auction.getBids().size(), is(1));
-
+        assertThat(auctionDTO.getClosed(), is(false));
     }
 }
