@@ -20,6 +20,7 @@ public class Auction {
     private String title;
     private String description;
     private Date dateAdded;
+    private Boolean closed;
     @ToString.Exclude
     @OneToMany
     private List<Bid> bids;
