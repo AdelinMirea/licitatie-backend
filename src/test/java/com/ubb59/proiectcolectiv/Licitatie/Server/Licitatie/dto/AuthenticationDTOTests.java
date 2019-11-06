@@ -55,6 +55,8 @@ public class AuthenticationDTOTests {
         assertThat(createdUser.getBids().size(), is(0));
         assertThat(createdUser.getComments().size(), is(0));
         assertThat(createdUser.getAuctions().size(), is(0));
+        assertThat(createdUser.getPremium(), is(false));
+        assertThat(createdUser.getNoOfPrivateAuctions(), is (0));
     }
 
     @Test(expected = EntityExistsException.class)

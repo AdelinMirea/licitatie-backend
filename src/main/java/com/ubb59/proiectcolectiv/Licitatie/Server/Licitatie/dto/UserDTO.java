@@ -18,6 +18,8 @@ public class UserDTO {
     private Double rating;
     private Integer numberOfRatings;
     private Double numberOfCredits;
+    private Boolean premium;
+    private Integer noOfPrivateAuctions;
     private List<Integer> bidsIds;
     private List<Integer> auctionsIds;
     private List<Integer> commentsIds;

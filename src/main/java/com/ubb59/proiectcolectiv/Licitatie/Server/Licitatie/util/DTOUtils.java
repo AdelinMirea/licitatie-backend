@@ -44,6 +44,8 @@ public class DTOUtils {
         userDTO.setNumberOfRatings(user.getNumberOfRatings());
         userDTO.setNumberOfCredits(user.getNumberOfCredits());
         userDTO.setVerified(user.getVerified());
+        userDTO.setPremium(user.getPremium());
+        userDTO.setNoOfPrivateAuctions(user.getNoOfPrivateAuctions());
         List<Integer> bidsIds = user.getBids().stream()
                 .map(Bid::getId)
                 .collect(Collectors.toList());
@@ -85,6 +87,8 @@ public class DTOUtils {
         updatedUser.setNumberOfRatings(userDTO.getNumberOfRatings());
         updatedUser.setNumberOfCredits(userDTO.getNumberOfCredits());
         updatedUser.setVerified(userDTO.getVerified());
+        updatedUser.setPremium(userDTO.getPremium());
+        updatedUser.setNoOfPrivateAuctions(userDTO.getNoOfPrivateAuctions());
         updatedUser.setBids(bids);
         updatedUser.setAuctions(auctions);
         updatedUser.setComments(comments);
@@ -106,6 +110,8 @@ public class DTOUtils {
             user.setNumberOfCredits(0d);
             user.setRating(0d);
             user.setNumberOfRatings(0);
+            user.setPremium(false);
+            user.setNoOfPrivateAuctions(0);
             //arbitrary date, we should know somehow that the user is new in the system
             user.setLastActive(Date.valueOf(LocalDate.of(2000, 1, 1)));
             user.setUserToken(token);
