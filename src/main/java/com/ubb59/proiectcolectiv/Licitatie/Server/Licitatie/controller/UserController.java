@@ -2,15 +2,18 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UpdatePasswordDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.UserService;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
@@ -45,8 +48,32 @@ public class UserController {
         }
     }
 
+    @PutMapping({"/users"})
+    public ResponseEntity<UserDTO> updateUser(@RequestHeader("token") String token, @RequestBody AuthenticationDTO authDTO) {
+        try {
+            User updatedUser = userService.updateUser(token, authDTO.getFirstName(), authDTO.getLastName(), authDTO.getMail());
+            return new ResponseEntity<>(dtoUtils.userToUserDTO(updatedUser), HttpStatus.OK);
+        } catch (TokenException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (DataValidationException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    @PutMapping({"/users/password"})
+    public ResponseEntity<UserDTO> updateUserPassword(@RequestHeader("token") String token, @RequestBody UpdatePasswordDTO updatePasswordDTO) {
+        try {
+            userService.updateUserPassword(token, updatePasswordDTO.getOldPassword(), updatePasswordDTO.getNewPassword());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (TokenException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (DataValidationException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+
     @PostMapping({"/login"})
-    public ResponseEntity<String> login(@RequestBody AuthenticationDTO authenticationDTO){
+    public ResponseEntity<String> login(@RequestBody AuthenticationDTO authenticationDTO) {
         try {
             String token = userService.getUserTokenByCredentials(authenticationDTO.getMail(), authenticationDTO.getPassword());
             return new ResponseEntity<>(token, HttpStatus.OK);
@@ -54,4 +81,5 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
 }

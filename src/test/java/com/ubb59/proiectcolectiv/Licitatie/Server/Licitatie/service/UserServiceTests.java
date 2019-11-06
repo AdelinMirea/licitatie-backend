@@ -2,8 +2,11 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import sun.tools.jstat.Token;
 
 import javax.persistence.EntityExistsException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -27,6 +32,8 @@ public class UserServiceTests {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     private User user1;
     private User user2;
@@ -38,7 +45,7 @@ public class UserServiceTests {
         user1.setPassword("123456");
         user1.setFirstName("a");
         user1.setLastName("a");
-        user1.setMail("a");
+        user1.setMail("a@a.com");
         user1.setNumberOfCredits(1.0);
         user1.setNumberOfRatings(1);
         user1.setLastActive(new Date(1));
@@ -52,7 +59,7 @@ public class UserServiceTests {
         user2.setPassword("123456");
         user2.setFirstName("a");
         user2.setLastName("a");
-        user2.setMail("b");
+        user2.setMail("b@b.com");
         user2.setNumberOfCredits(1.0);
         user2.setNumberOfRatings(1);
         user2.setLastActive(new Date(1));
@@ -117,5 +124,51 @@ public class UserServiceTests {
         String password = user1.getPassword();
         userService.addUser(user1);
         userService.getUserTokenByCredentials(user1.getMail(), password + "wrong");
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Test
+    public void updateUser() throws DataValidationException, TokenException {
+        userService.addUser(user1);
+        userService.updateUser(user1.getUserToken(), "b", "b", "b@b.com");
+        Optional<User> updatedUser = userRepository.findByUserToken(user1.getUserToken());
+        assertThat(updatedUser.isPresent(), is(true));
+        assertThat(updatedUser.get().getMail(), is("b@b.com"));
+        assertThat(updatedUser.get().getFirstName(), is("b"));
+        assertThat(updatedUser.get().getLastName(), is("b"));
+    }
+
+    @Test(expected = TokenException.class)
+    public void updateUserInvalidToken() throws DataValidationException, TokenException {
+        userService.addUser(user1);
+        userService.updateUser("invalid_token", "b", "b", "b@b.com");
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void updateUserInvalidData() throws DataValidationException, TokenException {
+        userService.addUser(user1);
+        userService.updateUser(user1.getUserToken(), "", "", "");
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Test
+    public void updateUserPassword() throws DataValidationException, TokenException {
+        userService.addUser(user1);
+        userService.updateUserPassword(user1.getUserToken(), "123456", "aaaaaa");
+        Optional<User> updatedUser = userRepository.findByUserToken(user1.getUserToken());
+        assertThat(updatedUser.isPresent(), is(true));
+        assertThat(updatedUser.get().getPassword(), is( DigestUtils.sha256Hex("aaaaaa")));
+    }
+
+    @Test(expected = TokenException.class)
+    public void updateUserPasswordInvalidToken() throws DataValidationException, TokenException {
+        userService.addUser(user1);
+        userService.updateUserPassword("invalid_token", "123456", "aaaaaa");
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void updateUserPasswordInvalidData() throws DataValidationException, TokenException {
+        userService.addUser(user1);
+        userService.updateUserPassword(user1.getUserToken(), "123456", "aaaaa");
     }
 }
