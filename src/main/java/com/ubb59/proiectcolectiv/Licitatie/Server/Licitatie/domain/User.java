@@ -28,6 +28,8 @@ public class User {
     private Double rating;
     private Integer numberOfRatings;
     private Double numberOfCredits;
+    private Boolean premium;
+    private Integer noOfPrivateAuctions;
     @ToString.Exclude
     @OneToMany
     private List<Bid> bids;
