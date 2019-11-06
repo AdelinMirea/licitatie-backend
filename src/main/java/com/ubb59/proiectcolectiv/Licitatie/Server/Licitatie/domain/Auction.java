@@ -1,5 +1,6 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
+@EqualsAndHashCode
 public class Auction {
 
     @Id
@@ -22,7 +24,7 @@ public class Auction {
     private Date dateAdded;
     private Boolean closed;
     @ToString.Exclude
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Bid> bids;
     @OneToOne
     private Bid winningBid;
