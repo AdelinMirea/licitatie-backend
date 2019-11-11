@@ -37,6 +37,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User getUserById(Integer id) throws DataValidationException {
+        return userRepository.findById(id).orElseThrow(() -> new DataValidationException("User does not exist"));
+
+    }
+
     public User updateUser(String token, String firstName, String lastName, String email) throws TokenException, DataValidationException {
         Optional<User> userOptional = userRepository.findByUserToken(token);
         if(!userOptional.isPresent()){

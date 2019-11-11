@@ -4,7 +4,6 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UpdatePasswordDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.UserService;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
@@ -13,11 +12,9 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenExcep
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
-import java.util.List;
 
 @RestController
 @CrossOrigin(
@@ -40,6 +37,18 @@ public class UserController {
             String userToken = String.valueOf(System.currentTimeMillis());
             User user = dtoUtils.createUserFromAuthentication(authenticationDTO, userToken);
             user = userService.addUser(user);
+            return new ResponseEntity<>(dtoUtils.userToUserDTO(user), HttpStatus.OK);
+        } catch (DataValidationException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping({"/users/{id}"})
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
+        try {
+            User user = userService.getUserById(id);
             return new ResponseEntity<>(dtoUtils.userToUserDTO(user), HttpStatus.OK);
         } catch (DataValidationException e) {
             return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
