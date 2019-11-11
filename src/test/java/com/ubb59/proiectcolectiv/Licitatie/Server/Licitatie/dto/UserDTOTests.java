@@ -1,10 +1,7 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.*;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +28,7 @@ public class UserDTOTests {
     private Auction auction;
     private Comment comment;
     private Bid bid;
+    private Category category;
     @Autowired
     private DTOUtils dtoUtils;
 
@@ -42,6 +40,8 @@ public class UserDTOTests {
         comment.setId(3);
         bid = new Bid();
         bid.setId(4);
+        category = new Category();
+        category.setId(5);
         user = new User();
         user.setId(1);
         user.setUserToken("1");
@@ -59,6 +59,7 @@ public class UserDTOTests {
         user.setAuctions(new ArrayList<>(Collections.singletonList(auction)));
         user.setBids(new ArrayList<>(Collections.singletonList(bid)));
         user.setComments(new ArrayList<>(Collections.singletonList(comment)));
+        user.setCategories(new ArrayList<>(Collections.singletonList(category)));
     }
 
     private void setupUserDTO() {
@@ -77,6 +78,7 @@ public class UserDTOTests {
         userDto.setAuctionsIds(new ArrayList<>(Collections.singletonList(2)));
         userDto.setBidsIds(new ArrayList<>(Collections.singletonList(3)));
         userDto.setCommentsIds(new ArrayList<>(Collections.singletonList(4)));
+        userDto.setCategoryIds(new ArrayList<>(Collections.singletonList(5)));
     }
 
     @Test
@@ -96,13 +98,14 @@ public class UserDTOTests {
         assertThat(userDTO.getAuctionsIds(), containsInAnyOrder(auction.getId()));
         assertThat(userDTO.getBidsIds(), containsInAnyOrder(bid.getId()));
         assertThat(userDTO.getCommentsIds(), containsInAnyOrder(comment.getId()));
+        assertThat(userDTO.getCategoryIds(), containsInAnyOrder(category.getId()));
     }
 
     @Test
     public void updateUserByUserDTO() {
         setupUserDTO();
         User newUser = dtoUtils.updateUserByUserDTO(user, userDto, Collections.singletonList(bid),
-                Collections.singletonList(auction), Collections.singletonList(comment));
+                Collections.singletonList(auction), Collections.singletonList(comment), Collections.singletonList(category));
         assertThat(newUser.getId(), is(1));
         assertThat(newUser.getPassword(), is("1"));
         assertThat(newUser.getUserToken(), is("1"));
@@ -119,5 +122,6 @@ public class UserDTOTests {
         assertThat(newUser.getAuctions(), containsInAnyOrder(auction));
         assertThat(newUser.getBids(), containsInAnyOrder(bid));
         assertThat(newUser.getComments(), containsInAnyOrder(comment));
+        assertThat(newUser.getCategories(), containsInAnyOrder(category));
     }
 }

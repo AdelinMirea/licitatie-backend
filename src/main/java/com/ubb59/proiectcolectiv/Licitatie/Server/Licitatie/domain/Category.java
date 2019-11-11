@@ -19,5 +19,7 @@ public class Category {
     private String name;
     @OneToMany
     private List<Auction> auctions;
+    @ManyToMany(mappedBy = "categories")
+    private List<User> users;
 
 }

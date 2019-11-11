@@ -39,4 +39,10 @@ public class User {
     @ToString.Exclude
     @OneToMany
     private List<Comment> comments;
+    @ToString.Exclude
+    @ManyToMany
+    @JoinTable(name = "user_category",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id")})
+    private List<Category> categories;
 }
