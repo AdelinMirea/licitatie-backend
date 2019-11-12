@@ -40,7 +40,9 @@ public class AuctionService {
         List<Auction> auctions = auctionRepository.findAllByTitleContainingOrDescriptionContainingOrCategoryIn(filter, filter, categories, PageRequest.of(page , itemNumber, Sort.by(Sort.Direction.DESC, sortBy)));
         return auctions.parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
     }
-
+    public List<AuctionDTO>findAllActive(){
+      return   auctionRepository.findAllByClosed(false).parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
+    }
     public Auction save(Auction auction) {
         return auctionRepository.save(auction);
     }

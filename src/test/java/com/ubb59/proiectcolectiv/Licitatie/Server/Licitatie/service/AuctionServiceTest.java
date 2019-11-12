@@ -40,11 +40,14 @@ public class AuctionServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    private Auction auction1, auction2;
+    private Auction auction1, auction2,auction3;
     @Before
     public void setUp() {
-        auction1 = createAuction("Title1", "", 2);
-        auction2 = createAuction("Title2", "Masina", 0);
+        auction1 = createAuction("Title1", "", 2,true);
+        auction2 = createAuction("Title2", "Masina", 0,false);
+        auction3 = createAuction("Title3", "Flori", 0,false);
+
+
     }
 
     @After
@@ -52,31 +55,37 @@ public class AuctionServiceTest {
         auctionRepository.deleteAll();
     }
 
-    public Auction createAuction(String title, String description, Integer minusDays){
+    public Auction createAuction(String title, String description, Integer minusDays,boolean closed){
         Category category = new Category();
         category = categoryRepository.save(category);
         User user = new User();
         user = userRepository.save(user);
-
         Auction auction = new Auction();
         auction.setTitle(title);
         auction.setDescription(description);
         auction.setOwner(user);
         auction.setCategory(category);
         auction.setBids(new ArrayList<>());
+        auction.setClosed(closed);
         auction.setDateAdded(Date.valueOf(LocalDate.now().minusDays(minusDays)));
+
         return auctionService.save(auction);
     }
 
     @Test
     public void findAll() {
-        assertThat(auctionService.findAll().size(), is(2));
+        assertThat(auctionService.findAll().size(), is(3));
     }
 
     @Test
     public void findAllSortedAndFiltered() {
         assertThat(auctionService.findAllSortedAndFiltered("dateAdded", "Masina", 0, 10).size(), is(1));
-        assertThat(auctionService.findAllSortedAndFiltered("dateAdded", "", 0, 10).size(), is(2));
-        assertThat(auctionService.findAllSortedAndFiltered("dateAdded", "", 0, 10).get(0), is(dtoUtils.auctionToAuctionDTO(auction2)));
+        assertThat(auctionService.findAllSortedAndFiltered("dateAdded", "", 0, 10).size(), is(3));
+        assertThat(auctionService.findAllSortedAndFiltered("dateAdded", "", 0, 10).get(0), is(dtoUtils.auctionToAuctionDTO(auction3)));
     }
+    @Test
+    public void findAllActive(){
+        assertThat(auctionService.findAllActive().size(),is(2));
+    }
+
 }
