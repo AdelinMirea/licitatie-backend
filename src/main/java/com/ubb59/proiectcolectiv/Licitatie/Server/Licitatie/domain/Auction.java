@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -23,6 +24,9 @@ public class Auction {
     private String description;
     private Date dateAdded;
     private Boolean closed;
+    @ColumnDefault(value="0.0")
+    private Double startingPrice;
+    private Boolean isPrivate;
     @ToString.Exclude
     @OneToMany(fetch = FetchType.EAGER)
     private List<Bid> bids;

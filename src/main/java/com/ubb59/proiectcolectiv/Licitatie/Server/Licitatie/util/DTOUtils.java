@@ -149,6 +149,8 @@ public class DTOUtils {
         updatedAuction.setTitle(auctionDTO.getTitle());
         updatedAuction.setClosed(auctionDTO.getClosed());
         updatedAuction.setDescription(auctionDTO.getDescription());
+        updatedAuction.setStartingPrice(auctionDTO.getStartingPrice());
+        updatedAuction.setIsPrivate(auctionDTO.getIsPrivate());
         updatedAuction.setOwner(owner);
         updatedAuction.setWinningBid(winningBid);
         updatedAuction.setCategory(category);
@@ -168,6 +170,8 @@ public class DTOUtils {
         auctionDTO.setDateAdded(auction.getDateAdded());
         auctionDTO.setOwnerId(auction.getOwner().getId());
         auctionDTO.setCategoryId(auction.getCategory().getId());
+        auctionDTO.setStartingPrice(auction.getStartingPrice());
+        auctionDTO.setIsPrivate(auction.getIsPrivate());
         if(auction.getWinningBid() != null){
             auctionDTO.setWinningBidId(auction.getWinningBid().getId());
         }
