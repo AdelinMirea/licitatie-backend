@@ -3,6 +3,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.*;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.BidDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,4 +190,41 @@ public class DTOUtils {
         return auctionDTO;
     }
 
+
+    public Bid bidDTOToBid(BidDTO bidDTO) {
+        Bid bid = bidRepository.getOne(bidDTO.getId());
+        if (bid == null) {
+            return null;
+        }
+        User bidder = userRepository.getOne(bidDTO.getBidderId());
+        Auction auction = auctionRepository.getOne(bidDTO.getAuctionId());
+        bid = updateBidByBidDTO(bid, bidDTO, bidder, auction);
+        return bid;
+    }
+
+    public Bid updateBidByBidDTO(Bid bid,
+                                 BidDTO bidDTO,
+                                 User bidder,
+                                 Auction auction) {
+        Bid updatedBid = new Bid();
+
+        updatedBid.setId(bid.getId());
+        updatedBid.setOffer(bidDTO.getOffer());
+        updatedBid.setBidder(bidder);
+        updatedBid.setAuction(auction);
+        return updatedBid;
+    }
+
+    /**
+     * Convert Bid to BidDTO
+     */
+    public BidDTO bidToBidDTO(Bid bid) {
+        BidDTO bidDTO = new BidDTO();
+        bidDTO.setId(bid.getId());
+        bidDTO.setOffer(bid.getOffer());
+        bidDTO.setBidderId(bid.getBidder().getId());
+        bidDTO.setAuctionId(bid.getAuction().getId());
+
+        return bidDTO;
+    }
 }
