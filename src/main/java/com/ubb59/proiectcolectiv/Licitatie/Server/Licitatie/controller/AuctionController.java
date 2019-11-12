@@ -36,5 +36,11 @@ public class AuctionController {
         List<AuctionDTO> auctions = auctionService.findAllSortedAndFiltered(sortBy, filter, page, itemNumber);
         return new ResponseEntity<>(auctions, HttpStatus.OK);
     }
+    @GetMapping("/auctions/now")
+    public ResponseEntity<?>getAllActiveAuctions(){
+        List<AuctionDTO> auctions = auctionService.findAllActive();
+        return new ResponseEntity<>(auctions, HttpStatus.OK);
+
+    }
 
 }
