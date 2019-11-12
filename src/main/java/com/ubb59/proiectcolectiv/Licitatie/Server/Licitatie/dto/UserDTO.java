@@ -23,5 +23,4 @@ public class UserDTO {
     private List<Integer> bidsIds;
     private List<Integer> auctionsIds;
     private List<Integer> commentsIds;
-    private List<Integer> categoryIds;
 }

@@ -69,10 +69,7 @@ public class AuctionDTOTests {
         auction.setWinningBid(bid1);
         auction.setOwner(owner);
         auction.setCategory(category);
-        auction.setStartingPrice(0.0);
-        auction.setIsPrivate(true);
         auction.setBids(bids);
-
 
         auctionDTO = new AuctionDTO();
         auctionDTO.setId(2);
@@ -82,8 +79,6 @@ public class AuctionDTOTests {
         auctionDTO.setClosed(false);
         auctionDTO.setOwnerId(2);
         auctionDTO.setCategoryId(2);
-        auctionDTO.setStartingPrice(100.0);
-        auctionDTO.setIsPrivate(false);
         auctionDTO.setBidsIds(Collections.singletonList(2));
     }
 
@@ -98,8 +93,6 @@ public class AuctionDTOTests {
         assertThat(auctionDTO.getOwnerId(), is(2));
         assertThat(auctionDTO.getBidsIds().size(), is(1));
         assertThat(auctionDTO.getClosed(), is(false));
-        assertThat(auctionDTO.getStartingPrice(), is (100.0));
-        assertThat(auctionDTO.getIsPrivate(), is (false));
 
         auctionDTO = dtoUtils.auctionToAuctionDTO(auction);
 
@@ -111,8 +104,6 @@ public class AuctionDTOTests {
         assertThat(auctionDTO.getOwnerId(), is(1));
         assertThat(auctionDTO.getBidsIds().size(), is(2));
         assertThat(auctionDTO.getClosed(), is(true));
-        assertThat(auctionDTO.getStartingPrice(), is (0.0));
-        assertThat(auctionDTO.getIsPrivate(), is (true));
 
     }
 
@@ -127,8 +118,6 @@ public class AuctionDTOTests {
         assertThat(auction.getOwner().getId(), is(1));
         assertThat(auction.getBids().size(), is(2));
         assertThat(auction.getClosed(), is(true));
-        assertThat(auction.getStartingPrice(), is (0.0));
-        assertThat(auction.getIsPrivate(), is (true));
 
         auctionDTO.setClosed(false);
         auction = dtoUtils.updateAuctionByAuctionDTO(auction, auctionDTO, owner2, bid2, category2, bids2);
@@ -140,8 +129,6 @@ public class AuctionDTOTests {
         assertThat(auction.getWinningBid().getId(), is(2));
         assertThat(auction.getOwner().getId(), is(2));
         assertThat(auction.getBids().size(), is(1));
-        assertThat(auction.getClosed(), is(false));
-        assertThat(auction.getStartingPrice(), is (100.0));
-        assertThat(auction.getIsPrivate(), is (false));
+        assertThat(auctionDTO.getClosed(), is(false));
     }
 }

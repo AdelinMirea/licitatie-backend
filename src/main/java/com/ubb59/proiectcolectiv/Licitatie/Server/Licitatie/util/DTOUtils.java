@@ -1,9 +1,7 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.*;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.*;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,14 +21,21 @@ public class DTOUtils {
     private final AuctionRepository auctionRepository;
     private final CommentRepository commentRepository;
     private final CategoryRepository categoryRepository;
+    private final PostRepository postRepository;
 
     @Autowired
-    public DTOUtils(UserRepository userRepository, BidRepository bidRepository, AuctionRepository auctionRepository, CommentRepository commentRepository, CategoryRepository categoryRepository) {
+    public DTOUtils(UserRepository userRepository,
+                    BidRepository bidRepository,
+                    AuctionRepository auctionRepository,
+                    CommentRepository commentRepository,
+                    CategoryRepository categoryRepository,
+                    PostRepository postRepository) {
         this.userRepository = userRepository;
         this.bidRepository = bidRepository;
         this.auctionRepository = auctionRepository;
         this.commentRepository = commentRepository;
         this.categoryRepository = categoryRepository;
+        this.postRepository = postRepository;
     }
 
     public UserDTO userToUserDTO(User user) {
@@ -58,10 +63,6 @@ public class DTOUtils {
                 .map(Comment::getId)
                 .collect(Collectors.toList());
         userDTO.setCommentsIds(commentsIds);
-        List<Integer> categoriesId = user.getCategories().stream()
-                .map(Category::getId)
-                .collect(Collectors.toList());
-        userDTO.setCategoryIds(categoriesId);
         return userDTO;
     }
 
@@ -75,11 +76,10 @@ public class DTOUtils {
             return null;
         }
         return updateUserByUserDTO(user, userDTO, bidRepository.findAllById(userDTO.getBidsIds()),
-                auctionRepository.findAllById(userDTO.getAuctionsIds()),
-                commentRepository.findAllById(userDTO.getCommentsIds()),categoryRepository.findAllById(userDTO.getCategoryIds()));
+                auctionRepository.findAllById(userDTO.getAuctionsIds()), commentRepository.findAllById(userDTO.getCommentsIds()));
     }
 
-    public User updateUserByUserDTO(User user, UserDTO userDTO, List<Bid> bids, List<Auction> auctions, List<Comment> comments, List<Category> categories) {
+    public User updateUserByUserDTO(User user, UserDTO userDTO, List<Bid> bids, List<Auction> auctions, List<Comment> comments) {
         User updatedUser = new User();
         updatedUser.setPassword(user.getPassword());
         updatedUser.setUserToken(user.getUserToken());
@@ -97,7 +97,6 @@ public class DTOUtils {
         updatedUser.setBids(bids);
         updatedUser.setAuctions(auctions);
         updatedUser.setComments(comments);
-        updatedUser.setCategories(categories);
         return updatedUser;
     }
 
@@ -124,7 +123,6 @@ public class DTOUtils {
             user.setAuctions(new ArrayList<>());
             user.setBids(new ArrayList<>());
             user.setComments(new ArrayList<>());
-            user.setCategories(new ArrayList<>());
             return user;
         }
     }
@@ -156,8 +154,6 @@ public class DTOUtils {
         updatedAuction.setTitle(auctionDTO.getTitle());
         updatedAuction.setClosed(auctionDTO.getClosed());
         updatedAuction.setDescription(auctionDTO.getDescription());
-        updatedAuction.setStartingPrice(auctionDTO.getStartingPrice());
-        updatedAuction.setIsPrivate(auctionDTO.getIsPrivate());
         updatedAuction.setOwner(owner);
         updatedAuction.setWinningBid(winningBid);
         updatedAuction.setCategory(category);
@@ -177,8 +173,6 @@ public class DTOUtils {
         auctionDTO.setDateAdded(auction.getDateAdded());
         auctionDTO.setOwnerId(auction.getOwner().getId());
         auctionDTO.setCategoryId(auction.getCategory().getId());
-        auctionDTO.setStartingPrice(auction.getStartingPrice());
-        auctionDTO.setIsPrivate(auction.getIsPrivate());
         if(auction.getWinningBid() != null){
             auctionDTO.setWinningBidId(auction.getWinningBid().getId());
         }
@@ -189,4 +183,84 @@ public class DTOUtils {
         return auctionDTO;
     }
 
+
+    public Comment commentDTOToComment(CommentDTO commentDTO) {
+        Comment comment = commentRepository.getOne(commentDTO.getId());
+        if (comment == null) {
+            return null;
+        }
+        User owner = userRepository.getOne(commentDTO.getUserId());
+        Post post = postRepository.getOne(commentDTO.getPostId());
+        comment = updateCommentByCommentDTO(comment, commentDTO, owner, post);
+        return comment;
+    }
+
+    public Comment updateCommentByCommentDTO(Comment comment,
+                                             CommentDTO commentDTO,
+                                             User owner,
+                                             Post post) {
+        Comment updatedComment = new Comment();
+        if(commentDTO.getDatePosted() == null){
+            updatedComment.setDatePosted(Date.valueOf(LocalDate.now()));
+        }
+        else{
+            updatedComment.setDatePosted(commentDTO.getDatePosted());
+        }
+        updatedComment.setId(comment.getId());
+        updatedComment.setContent(commentDTO.getContent());
+        updatedComment.setUser(owner);
+        updatedComment.setPost(post);
+        return updatedComment;
+    }
+
+    /**
+     * Convert Comment to CommentDTO
+     */
+    public CommentDTO commentToCommentDTO(Comment comment) {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setId(comment.getId());
+        commentDTO.setContent(comment.getContent());
+        commentDTO.setDatePosted(comment.getDatePosted());
+        commentDTO.setUserId(comment.getUser().getId());
+        commentDTO.setPostId(comment.getPost().getId());
+
+        return commentDTO;
+    }
+
+    public Bid bidDTOToBid(BidDTO bidDTO) {
+        Bid bid = bidRepository.getOne(bidDTO.getId());
+        if (bid == null) {
+            return null;
+        }
+        User bidder = userRepository.getOne(bidDTO.getBidderId());
+        Auction auction = auctionRepository.getOne(bidDTO.getAuctionId());
+        bid = updateBidByBidDTO(bid, bidDTO, bidder, auction);
+        return bid;
+    }
+
+    public Bid updateBidByBidDTO(Bid bid,
+                                 BidDTO bidDTO,
+                                 User bidder,
+                                 Auction auction) {
+        Bid updatedBid = new Bid();
+
+        updatedBid.setId(bid.getId());
+        updatedBid.setOffer(bidDTO.getOffer());
+        updatedBid.setBidder(bidder);
+        updatedBid.setAuction(auction);
+        return updatedBid;
+    }
+
+    /**
+     * Convert Bid to BidDTO
+     */
+    public BidDTO bidToBidDTO(Bid bid) {
+        BidDTO bidDTO = new BidDTO();
+        bidDTO.setId(bid.getId());
+        bidDTO.setOffer(bid.getOffer());
+        bidDTO.setBidderId(bid.getBidder().getId());
+        bidDTO.setAuctionId(bid.getAuction().getId());
+
+        return bidDTO;
+    }
 }

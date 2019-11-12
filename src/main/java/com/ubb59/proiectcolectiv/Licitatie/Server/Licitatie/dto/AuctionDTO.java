@@ -16,8 +16,6 @@ public class AuctionDTO {
     private String description;
     private Date dateAdded;
     private Boolean closed;
-    private Double startingPrice;
-    private Boolean isPrivate;
     private List<Integer> bidsIds;
     private Integer winningBidId;
     private Integer ownerId;
