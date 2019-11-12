@@ -58,6 +58,10 @@ public class DTOUtils {
                 .map(Comment::getId)
                 .collect(Collectors.toList());
         userDTO.setCommentsIds(commentsIds);
+        List<Integer> categoriesId = user.getCategories().stream()
+                .map(Category::getId)
+                .collect(Collectors.toList());
+        userDTO.setCategoryIds(categoriesId);
         return userDTO;
     }
 
@@ -71,10 +75,11 @@ public class DTOUtils {
             return null;
         }
         return updateUserByUserDTO(user, userDTO, bidRepository.findAllById(userDTO.getBidsIds()),
-                auctionRepository.findAllById(userDTO.getAuctionsIds()), commentRepository.findAllById(userDTO.getCommentsIds()));
+                auctionRepository.findAllById(userDTO.getAuctionsIds()),
+                commentRepository.findAllById(userDTO.getCommentsIds()),categoryRepository.findAllById(userDTO.getCategoryIds()));
     }
 
-    public User updateUserByUserDTO(User user, UserDTO userDTO, List<Bid> bids, List<Auction> auctions, List<Comment> comments) {
+    public User updateUserByUserDTO(User user, UserDTO userDTO, List<Bid> bids, List<Auction> auctions, List<Comment> comments, List<Category> categories) {
         User updatedUser = new User();
         updatedUser.setPassword(user.getPassword());
         updatedUser.setUserToken(user.getUserToken());
@@ -92,6 +97,7 @@ public class DTOUtils {
         updatedUser.setBids(bids);
         updatedUser.setAuctions(auctions);
         updatedUser.setComments(comments);
+        updatedUser.setCategories(categories);
         return updatedUser;
     }
 
@@ -118,6 +124,7 @@ public class DTOUtils {
             user.setAuctions(new ArrayList<>());
             user.setBids(new ArrayList<>());
             user.setComments(new ArrayList<>());
+            user.setCategories(new ArrayList<>());
             return user;
         }
     }
