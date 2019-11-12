@@ -1,10 +1,7 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.*;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.BidDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.*;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,14 +21,21 @@ public class DTOUtils {
     private final AuctionRepository auctionRepository;
     private final CommentRepository commentRepository;
     private final CategoryRepository categoryRepository;
+    private final PostRepository postRepository;
 
     @Autowired
-    public DTOUtils(UserRepository userRepository, BidRepository bidRepository, AuctionRepository auctionRepository, CommentRepository commentRepository, CategoryRepository categoryRepository) {
+    public DTOUtils(UserRepository userRepository,
+                    BidRepository bidRepository,
+                    AuctionRepository auctionRepository,
+                    CommentRepository commentRepository,
+                    CategoryRepository categoryRepository,
+                    PostRepository postRepository) {
         this.userRepository = userRepository;
         this.bidRepository = bidRepository;
         this.auctionRepository = auctionRepository;
         this.commentRepository = commentRepository;
         this.categoryRepository = categoryRepository;
+        this.postRepository = postRepository;
     }
 
     public UserDTO userToUserDTO(User user) {
@@ -226,5 +230,48 @@ public class DTOUtils {
         bidDTO.setAuctionId(bid.getAuction().getId());
 
         return bidDTO;
+    }
+
+    public Comment commentDTOToComment(CommentDTO commentDTO) {
+        Comment comment = commentRepository.getOne(commentDTO.getId());
+        if (comment == null) {
+            return null;
+        }
+        User owner = userRepository.getOne(commentDTO.getUserId());
+        Post post = postRepository.getOne(commentDTO.getPostId());
+        comment = updateCommentByCommentDTO(comment, commentDTO, owner, post);
+        return comment;
+    }
+
+    public Comment updateCommentByCommentDTO(Comment comment,
+                                             CommentDTO commentDTO,
+                                             User owner,
+                                             Post post) {
+        Comment updatedComment = new Comment();
+        if(commentDTO.getDatePosted() == null){
+            updatedComment.setDatePosted(Date.valueOf(LocalDate.now()));
+        }
+        else{
+            updatedComment.setDatePosted(commentDTO.getDatePosted());
+        }
+        updatedComment.setId(comment.getId());
+        updatedComment.setContent(commentDTO.getContent());
+        updatedComment.setUser(owner);
+        updatedComment.setPost(post);
+        return updatedComment;
+    }
+
+    /**
+     * Convert Comment to CommentDTO
+     */
+    public CommentDTO commentToCommentDTO(Comment comment) {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setId(comment.getId());
+        commentDTO.setContent(comment.getContent());
+        commentDTO.setDatePosted(comment.getDatePosted());
+        commentDTO.setUserId(comment.getUser().getId());
+        commentDTO.setPostId(comment.getPost().getId());
+
+        return commentDTO;
     }
 }
