@@ -233,10 +233,7 @@ public class DTOUtils {
     }
 
     public Comment commentDTOToComment(CommentDTO commentDTO) {
-        Comment comment = commentRepository.getOne(commentDTO.getId());
-        if (comment == null) {
-            return null;
-        }
+        Comment comment = new Comment();
         User owner = userRepository.getOne(commentDTO.getUserId());
         Post post = postRepository.getOne(commentDTO.getPostId());
         comment = updateCommentByCommentDTO(comment, commentDTO, owner, post);

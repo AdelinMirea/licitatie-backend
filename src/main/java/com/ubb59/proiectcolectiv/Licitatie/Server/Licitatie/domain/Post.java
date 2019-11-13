@@ -18,7 +18,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ToString.Exclude
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Comment> comments;
     @OneToOne
     private Auction auction;
