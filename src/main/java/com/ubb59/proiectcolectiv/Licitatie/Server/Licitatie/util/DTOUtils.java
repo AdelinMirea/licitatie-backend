@@ -81,7 +81,7 @@ public class DTOUtils {
         }
         return updateUserByUserDTO(user, userDTO, bidRepository.findAllById(userDTO.getBidsIds()),
                 auctionRepository.findAllById(userDTO.getAuctionsIds()),
-                commentRepository.findAllById(userDTO.getCommentsIds()),categoryRepository.findAllById(userDTO.getCategoryIds()));
+                commentRepository.findAllById(userDTO.getCommentsIds()), categoryRepository.findAllById(userDTO.getCategoryIds()));
     }
 
     public User updateUserByUserDTO(User user, UserDTO userDTO, List<Bid> bids, List<Auction> auctions, List<Comment> comments, List<Category> categories) {
@@ -154,7 +154,7 @@ public class DTOUtils {
 
     public Auction updateAuctionByAuctionDTO(Auction auction, AuctionDTO auctionDTO, User owner, Bid winningBid, Category category, List<Bid> bids) {
         Auction updatedAuction = new Auction();
-        if(auctionDTO.getDateAdded() == null){
+        if (auctionDTO.getDateAdded() == null) {
             updatedAuction.setDateAdded(Date.valueOf(LocalDate.now()));
         }
         updatedAuction.setId(auction.getId());
@@ -184,7 +184,7 @@ public class DTOUtils {
         auctionDTO.setCategoryId(auction.getCategory().getId());
         auctionDTO.setStartingPrice(auction.getStartingPrice());
         auctionDTO.setIsPrivate(auction.getIsPrivate());
-        if(auction.getWinningBid() != null){
+        if (auction.getWinningBid() != null) {
             auctionDTO.setWinningBidId(auction.getWinningBid().getId());
         }
         List<Integer> bidsIds = auction.getBids().stream()
@@ -248,10 +248,9 @@ public class DTOUtils {
                                              User owner,
                                              Post post) {
         Comment updatedComment = new Comment();
-        if(commentDTO.getDatePosted() == null){
+        if (commentDTO.getDatePosted() == null) {
             updatedComment.setDatePosted(Date.valueOf(LocalDate.now()));
-        }
-        else{
+        } else {
             updatedComment.setDatePosted(commentDTO.getDatePosted());
         }
         updatedComment.setId(comment.getId());
@@ -273,5 +272,35 @@ public class DTOUtils {
         commentDTO.setPostId(comment.getPost().getId());
 
         return commentDTO;
+    }
+
+    public Post postDTOToPost(PostDTO postDTO) {
+        Post post = postRepository.getOne(postDTO.getId());
+        if (post == null) {
+            return null;
+        }
+        Auction auction = auctionRepository.getOne(postDTO.getAuctionId());
+        List<Comment> comments = commentRepository.findAllById(postDTO.getCommentsIds());
+        post = updatePostByPostDTO(post, postDTO, auction, comments);
+        return post;
+    }
+
+    public Post updatePostByPostDTO(Post post, PostDTO postDTO, Auction auction, List<Comment> comments) {
+        post.setId(postDTO.getId());
+        post.setAuction(auction);
+        post.setComments(comments);
+        return post;
+    }
+
+
+    public PostDTO postToPostDTO(Post post) {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setId(post.getId());
+        postDTO.setAuctionId(post.getAuction().getId());
+        List<Integer> commentsIds = post.getComments().stream()
+                .map(Comment::getId)
+                .collect(Collectors.toList());
+        postDTO.setCommentsIds(commentsIds);
+        return postDTO;
     }
 }
