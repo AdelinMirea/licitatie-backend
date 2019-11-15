@@ -6,7 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
+import javax.transaction.Transactional;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,8 +19,9 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ToString.Exclude
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Comment> comments;
+    @OneToMany(fetch = FetchType.EAGER,
+            cascade=CascadeType.ALL)
+    private Set<Comment> comments;
     @OneToOne
     private Auction auction;
 }

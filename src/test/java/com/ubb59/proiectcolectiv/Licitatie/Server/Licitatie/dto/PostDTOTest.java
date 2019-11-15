@@ -5,6 +5,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Post;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -28,8 +28,8 @@ public class PostDTOTest {
     private PostDTO postDTO;
     private Auction auction1;
     private Auction auction2;
-    private List<Comment> commentList1;
-    private List<Comment> commentList2;
+    private Set<Comment> comments1;
+    private Set<Comment> comments2;
 
     @Autowired
     private DTOUtils dtoUtils;
@@ -44,20 +44,20 @@ public class PostDTOTest {
         Comment comment1 = new Comment();
         comment1.setId(1);
         comment1.setContent("Comment 1");
-        commentList1 = new ArrayList<>();
-        commentList1.add(comment1);
+        comments1 = new HashSet<>();
+        comments1.add(comment1);
 
         post = new Post();
         post.setId(1);
         post.setAuction(auction1);
-        post.setComments(commentList1);
+        post.setComments(comments1);
 
         postDTO = new PostDTO();
         postDTO.setId(2);
         postDTO.setId(2);
         postDTO.setAuctionId(2);
         postDTO.setCommentsIds(Arrays.asList(1, 2));
-        commentList2 = new ArrayList<>();
+        comments2 = new HashSet<>();
     }
 
     @Test
@@ -81,7 +81,7 @@ public class PostDTOTest {
         assertThat(post.getAuction().getId(), is(1));
         assertThat(post.getComments().size(), is(1));
 
-        post = dtoUtils.updatePostByPostDTO(post, postDTO, auction2, commentList2);
+        post = dtoUtils.updatePostByPostDTO(post, postDTO, auction2, comments2);
 
         assertThat(post.getId(), is(2));
         assertThat(post.getAuction().getId(), is(2));

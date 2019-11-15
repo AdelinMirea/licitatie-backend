@@ -4,7 +4,6 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieAppli
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Post;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.PostRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
+import javax.persistence.EntityNotFoundException;
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,25 +35,22 @@ public class PostServiceTest {
     @Before
     public void setup() {
         post = new Post();
-        post.setId(1);
-        post.setComments(new ArrayList<>());
-//        postRepository.save(post);
+        post.setComments(new HashSet<>());
+        postRepository.save(post);
 
         comment = new Comment();
         comment.setContent("hello");
     }
 
     @Test
-    public void addCommentSuccess() throws Exception {
-        postRepository.save(post);
-        Post addedPost = postService.addComment(1, comment);
+    public void addCommentSuccess() {
+        Post addedPost = postService.addComment(post.getId(), comment);
         assertThat(addedPost.getComments().size(), is(1));
-        assertThat(addedPost.getComments().get(0).getContent(), is("Hello"));
     }
-//
-//    @Test(expected = Exception.class)
-//    public void addCommentFailure() throws Exception {
-//        postService.addComment(2, comment);
-//    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void addCommentFailure() {
+        postService.addComment(2, comment);
+    }
 
 }
