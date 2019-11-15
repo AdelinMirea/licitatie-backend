@@ -13,4 +13,5 @@ import java.util.List;
 @Transactional
 public interface AuctionRepository extends JpaRepository<Auction, Integer> {
     List<Auction> findAllByTitleContainingOrDescriptionContainingOrCategoryIn(String title, String descriprion, List<Category> category, Pageable of);
+    List<Auction> findAllByClosed(Boolean closed);
 }
