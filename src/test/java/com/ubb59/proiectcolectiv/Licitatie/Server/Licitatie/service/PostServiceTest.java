@@ -3,6 +3,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Post;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CommentRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.PostRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,8 @@ public class PostServiceTest {
     private PostService postService;
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     private Post post;
     private Comment comment;
@@ -45,6 +48,7 @@ public class PostServiceTest {
     @Test
     public void addCommentSuccess() {
         Post addedPost = postService.addComment(post.getId(), comment);
+        assertThat(commentRepository.findAll().size(), is(1));
         assertThat(addedPost.getComments().size(), is(1));
     }
 
