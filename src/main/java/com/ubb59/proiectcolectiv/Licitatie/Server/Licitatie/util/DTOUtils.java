@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityExistsException;
+import java.awt.*;
+import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -167,6 +170,7 @@ public class DTOUtils {
         updatedAuction.setWinningBid(winningBid);
         updatedAuction.setCategory(category);
         updatedAuction.setBids(bids);
+        updatedAuction.setImageNames(auction.getImageNames());
         return updatedAuction;
     }
 
@@ -191,6 +195,18 @@ public class DTOUtils {
                 .map(Bid::getId)
                 .collect(Collectors.toList());
         auctionDTO.setBidsIds(bidsIds);
+        List<String> encodedImages = auction.getImageNames()
+                .parallelStream()
+                .map(imageName -> {
+                    try {
+                        return ImageUtils.getEncodedImageFromImageName(imageName);
+                    } catch (IOException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        auctionDTO.setEncodedImages(encodedImages);
         return auctionDTO;
     }
 

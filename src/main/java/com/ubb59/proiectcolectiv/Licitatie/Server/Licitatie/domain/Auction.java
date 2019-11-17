@@ -8,7 +8,9 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,7 +26,7 @@ public class Auction {
     private String description;
     private Date dateAdded;
     private Boolean closed;
-    @ColumnDefault(value="0.0")
+    @ColumnDefault(value = "0.0")
     private Double startingPrice;
     private Boolean isPrivate;
     @ToString.Exclude
@@ -36,4 +38,8 @@ public class Auction {
     private User owner;
     @ManyToOne
     private Category category;
+    @ElementCollection
+    @CollectionTable(name = "ImageNames", joinColumns = @JoinColumn(name = "auction_id"))
+    @Column(name = "imageName")
+    private Collection<String> imageNames;
 }

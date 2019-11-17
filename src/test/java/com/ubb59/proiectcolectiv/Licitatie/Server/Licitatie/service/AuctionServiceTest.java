@@ -46,8 +46,6 @@ public class AuctionServiceTest {
         auction1 = createAuction("Title1", "", 2,true);
         auction2 = createAuction("Title2", "Masina", 0,false);
         auction3 = createAuction("Title3", "Flori", 0,false);
-
-
     }
 
     @After
@@ -68,6 +66,7 @@ public class AuctionServiceTest {
         auction.setBids(new ArrayList<>());
         auction.setClosed(closed);
         auction.setDateAdded(Date.valueOf(LocalDate.now().minusDays(minusDays)));
+        auction.setImageNames(new ArrayList<>());
 
         return auctionService.save(auction);
     }

@@ -22,4 +22,5 @@ public class AuctionDTO {
     private Integer winningBidId;
     private Integer ownerId;
     private Integer categoryId;
+    private List<String> encodedImages;
 }
