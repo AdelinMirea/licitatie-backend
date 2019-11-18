@@ -5,7 +5,6 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Post;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -28,8 +28,8 @@ public class PostDTOTest {
     private PostDTO postDTO;
     private Auction auction1;
     private Auction auction2;
-    private Set<Comment> comments1;
-    private Set<Comment> comments2;
+    private List<Comment> comments1;
+    private List<Comment> comments2;
 
     @Autowired
     private DTOUtils dtoUtils;
@@ -44,7 +44,7 @@ public class PostDTOTest {
         Comment comment1 = new Comment();
         comment1.setId(1);
         comment1.setContent("Comment 1");
-        comments1 = new HashSet<>();
+        comments1 = new ArrayList<>();
         comments1.add(comment1);
 
         post = new Post();
@@ -57,7 +57,7 @@ public class PostDTOTest {
         postDTO.setId(2);
         postDTO.setAuctionId(2);
         postDTO.setCommentsIds(Arrays.asList(1, 2));
-        comments2 = new HashSet<>();
+        comments2 = new ArrayList<>();
     }
 
     @Test

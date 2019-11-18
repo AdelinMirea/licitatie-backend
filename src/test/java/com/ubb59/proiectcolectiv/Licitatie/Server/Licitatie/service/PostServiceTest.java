@@ -14,7 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -38,7 +38,7 @@ public class PostServiceTest {
     @Before
     public void setup() {
         post = new Post();
-        post.setComments(new HashSet<>());
+        post.setComments(new ArrayList<>());
         postRepository.save(post);
 
         comment = new Comment();

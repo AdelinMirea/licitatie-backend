@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.Set;
+import java.util.List;
 
 @Component
 @Transactional
@@ -33,8 +33,8 @@ public class PostService {
      */
     public Post addComment(Integer postId, Comment comment) throws EntityNotFoundException {
         Post post = postRepository.getOne(postId);
-        commentRepository.save(comment);
-        Set<Comment> comments = post.getComments();
+        comment = commentRepository.save(comment);
+        List<Comment> comments = post.getComments();
         comments.add(comment);
         post.setComments(comments);
         return postRepository.save(post);

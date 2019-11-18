@@ -10,9 +10,7 @@ import javax.persistence.EntityExistsException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -279,12 +277,12 @@ public class DTOUtils {
             return null;
         }
         Auction auction = auctionRepository.getOne(postDTO.getAuctionId());
-        Set<Comment> comments = new HashSet<>(commentRepository.findAllById(postDTO.getCommentsIds()));
+        List<Comment> comments = new ArrayList<>(commentRepository.findAllById(postDTO.getCommentsIds()));
         post = updatePostByPostDTO(post, postDTO, auction, comments);
         return post;
     }
 
-    public Post updatePostByPostDTO(Post post, PostDTO postDTO, Auction auction, Set<Comment> comments) {
+    public Post updatePostByPostDTO(Post post, PostDTO postDTO, Auction auction, List<Comment> comments) {
         post.setId(postDTO.getId());
         post.setAuction(auction);
         post.setComments(comments);
