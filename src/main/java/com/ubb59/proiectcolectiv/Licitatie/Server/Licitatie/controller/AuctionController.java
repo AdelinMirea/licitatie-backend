@@ -20,7 +20,6 @@ import java.util.List;
 public class AuctionController {
 
     private AuctionService auctionService;
-    private DTOUtils dtoUtils;
 
     @Autowired
     public AuctionController(AuctionService auctionService){
@@ -46,20 +45,8 @@ public class AuctionController {
 
     @PostMapping("/auctions")
     public AuctionDTO add(
-            @RequestParam(name = "id") Integer id,
-            @RequestParam(name = "title") String title,
-            @RequestParam(name = "description") String description,
-            @RequestParam(name = "dateAdded") Date dateAdded,
-            @RequestParam(name = "closed") Boolean closed,
-            @RequestParam(name = "startingPrice") Double startingPrice,
-            @RequestParam(name = "isPrivate") Boolean isPrivate,
-            @RequestParam(name = "bidsIds") List<Integer> bidsIds,
-            @RequestParam(name = "winningBidId") Integer winningBidId,
-            @RequestParam(name = "ownerId") Integer ownerId,
-            @RequestParam(name = "categoryId") Integer categoryId
+            @RequestParam(name = "auctionDTO") AuctionDTO auctionDTO
     ){
-        Auction auction = new Auction(id,title,description,dateAdded,closed,startingPrice,isPrivate,bidsIds,winningBidId,ownerId,categoryId);
-        AuctionDTO auctionDTO = dtoUtils.auctionToAuctionDTO(auction);
         auctionService.save(auctionDTO);
         return auctionDTO;
     }
