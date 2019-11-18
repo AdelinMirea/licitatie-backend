@@ -1,16 +1,16 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.AuctionService;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -20,6 +20,7 @@ import java.util.List;
 public class AuctionController {
 
     private AuctionService auctionService;
+    private DTOUtils dtoUtils;
 
     @Autowired
     public AuctionController(AuctionService auctionService){
@@ -41,6 +42,26 @@ public class AuctionController {
         List<AuctionDTO> auctions = auctionService.findAllActive();
         return new ResponseEntity<>(auctions, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/auctions")
+    public AuctionDTO add(
+            @RequestParam(name = "id") Integer id,
+            @RequestParam(name = "title") String title,
+            @RequestParam(name = "description") String description,
+            @RequestParam(name = "dateAdded") Date dateAdded,
+            @RequestParam(name = "closed") Boolean closed,
+            @RequestParam(name = "startingPrice") Double startingPrice,
+            @RequestParam(name = "isPrivate") Boolean isPrivate,
+            @RequestParam(name = "bidsIds") List<Integer> bidsIds,
+            @RequestParam(name = "winningBidId") Integer winningBidId,
+            @RequestParam(name = "ownerId") Integer ownerId,
+            @RequestParam(name = "categoryId") Integer categoryId
+    ){
+        Auction auction = new Auction(id,title,description,dateAdded,closed,startingPrice,isPrivate,bidsIds,winningBidId,ownerId,categoryId);
+        AuctionDTO auctionDTO = dtoUtils.auctionToAuctionDTO(auction);
+        auctionService.save(auctionDTO);
+        return auctionDTO;
     }
 
 }

@@ -36,4 +36,10 @@ public class Auction {
     private User owner;
     @ManyToOne
     private Category category;
+
+    public Auction(Integer id, String title, String description, java.util.Date dateAdded, Boolean closed, Double startingPrice, Boolean isPrivate, List<Integer> bidsIds, Integer winningBidId, Integer ownerId, Integer categoryId) {
+    }
+
+    public Auction() {
+    }
 }
