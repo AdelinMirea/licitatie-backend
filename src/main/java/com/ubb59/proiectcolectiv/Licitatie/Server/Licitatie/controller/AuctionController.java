@@ -3,11 +3,13 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.AuctionService;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityExistsException;
 import java.util.List;
 
 @RestController
@@ -41,11 +43,18 @@ public class AuctionController {
     }
 
     @PostMapping("/auctions")
-    public AuctionDTO add(
+    public ResponseEntity<?>add(
             @RequestParam(name = "auctionDTO") AuctionDTO auctionDTO
     ){
-        auctionService.save(auctionDTO);
-        return auctionDTO;
+        try{
+            auctionService.save(auctionDTO);
+        }catch (DataValidationException e){
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(auctionDTO, HttpStatus.OK);
     }
 
 }
