@@ -18,7 +18,8 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ToString.Exclude
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade=CascadeType.ALL)
     private List<Comment> comments;
     @OneToOne
     private Auction auction;

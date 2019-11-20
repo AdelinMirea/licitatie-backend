@@ -249,10 +249,7 @@ public class DTOUtils {
     }
 
     public Comment commentDTOToComment(CommentDTO commentDTO) {
-        Comment comment = commentRepository.getOne(commentDTO.getId());
-        if (comment == null) {
-            return null;
-        }
+        Comment comment = new Comment();
         User owner = userRepository.getOne(commentDTO.getUserId());
         Post post = postRepository.getOne(commentDTO.getPostId());
         comment = updateCommentByCommentDTO(comment, commentDTO, owner, post);
@@ -296,7 +293,7 @@ public class DTOUtils {
             return null;
         }
         Auction auction = auctionRepository.getOne(postDTO.getAuctionId());
-        List<Comment> comments = commentRepository.findAllById(postDTO.getCommentsIds());
+        List<Comment> comments = new ArrayList<>(commentRepository.findAllById(postDTO.getCommentsIds()));
         post = updatePostByPostDTO(post, postDTO, auction, comments);
         return post;
     }
