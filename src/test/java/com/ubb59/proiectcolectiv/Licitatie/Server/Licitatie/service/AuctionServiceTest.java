@@ -9,6 +9,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionR
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +48,6 @@ public class AuctionServiceTest {
         auction1 = createAuction("Title1", "", 2,true);
         auction2 = createAuction("Title2", "Masina", 0,false);
         auction3 = createAuction("Title3", "Flori", 0,false);
-        addAuctionDTO();
     }
 
     @After
@@ -71,13 +71,14 @@ public class AuctionServiceTest {
 
         return auctionService.save(auction);
     }
-
-    public void addAuctionDTO() throws Exception{
+    @Test
+    public void addAuctionDTO() throws DataValidationException {
 
         AuctionDTO auctionDTO = dtoUtils.auctionToAuctionDTO(auction2);
-        auctionDTO.setDescription("Mama Yo Quero");
+        auctionDTO.setDescription("Mama Yo Quero Una Aprobacion");
+        assertThat(auctionDTO.getDescription(),is("Mama Yo Quero Una Aprobacion"));
         auctionService.save(auctionDTO);
-
+        assertThat(auctionService.findAll().size(), is(4));
     }
 
     @Test
