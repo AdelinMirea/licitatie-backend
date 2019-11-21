@@ -4,6 +4,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieAppli
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Category;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
@@ -42,12 +43,11 @@ public class AuctionServiceTest {
 
     private Auction auction1, auction2,auction3;
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         auction1 = createAuction("Title1", "", 2,true);
         auction2 = createAuction("Title2", "Masina", 0,false);
         auction3 = createAuction("Title3", "Flori", 0,false);
-
-
+        addAuctionDTO();
     }
 
     @After
@@ -70,6 +70,14 @@ public class AuctionServiceTest {
         auction.setDateAdded(Date.valueOf(LocalDate.now().minusDays(minusDays)));
 
         return auctionService.save(auction);
+    }
+
+    public void addAuctionDTO() throws Exception{
+
+        AuctionDTO auctionDTO = dtoUtils.auctionToAuctionDTO(auction2);
+        auctionDTO.setDescription("Mama Yo Quero");
+        auctionService.save(auctionDTO);
+
     }
 
     @Test
