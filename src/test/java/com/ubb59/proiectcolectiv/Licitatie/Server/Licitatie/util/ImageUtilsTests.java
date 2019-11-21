@@ -16,7 +16,7 @@ public class ImageUtilsTests {
 
     @After
     public void after() throws IOException {
-        for (File f : new File(ClassLoader.getSystemClassLoader().getResource("images").getPath()).listFiles()) {
+        for (File f : new File(ClassLoader.getSystemClassLoader().getResource("images").getPath().replace("%20", " ")).listFiles()) {
             if (!f.getName().equals("testImage.JPG")) {
                 f.delete();
             }
@@ -34,7 +34,7 @@ public class ImageUtilsTests {
         String addedImageName = ImageUtils.addImage(encodedImage);
         URL path = ClassLoader.getSystemClassLoader().getResource("images");
         File image = new File(
-                ClassLoader.getSystemClassLoader().getResource("images/" + addedImageName).getFile()
+                ClassLoader.getSystemClassLoader().getResource("images/" + addedImageName).getFile().replace("%20", " ")
         );
         assertThat(image.exists(), is(true));
     }
@@ -44,7 +44,7 @@ public class ImageUtilsTests {
         String encodedImage = ImageUtils.getEncodedImageFromImageName(imageName);
         String addedImageName = ImageUtils.addImage(encodedImage);
         File image = new File(
-                ClassLoader.getSystemClassLoader().getResource("images/" + addedImageName).getFile()
+                ClassLoader.getSystemClassLoader().getResource("images/" + addedImageName).getFile().replace("%20", " ")
         );
         assertThat(image.exists(), is(true));
         ImageUtils.removeImage(addedImageName);
