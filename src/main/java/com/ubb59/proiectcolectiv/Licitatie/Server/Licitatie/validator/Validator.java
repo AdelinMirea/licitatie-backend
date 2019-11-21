@@ -31,19 +31,6 @@ public class Validator {
     }
 
     public void validateAuction(Auction auction) throws DataValidationException{
-        if(auction.getId() == null
-                || auction.getTitle() == null
-                || auction.getDescription() == null
-                || auction.getDateAdded() == null
-                || auction.getClosed() == null
-                || auction.getStartingPrice() == null
-                || auction.getIsPrivate() == null
-                || auction.getOwner() == null
-                || auction.getCategory() == null
-        ){
-            throw new DataValidationException("The auction has null fields");
-        }
-
         if(auction.getTitle().isEmpty()){
             throw new DataValidationException("The auction must have a title");
         }

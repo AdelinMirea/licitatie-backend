@@ -45,7 +45,7 @@ public class AuctionServiceTest {
     private Auction auction1, auction2,auction3;
     @Before
     public void setUp() throws Exception {
-        auction1 = createAuction("Title1", "", 2,true);
+        auction1 = createAuction("Title1", "Antidot la corazon", 2,true);
         auction2 = createAuction("Title2", "Masina", 0,false);
         auction3 = createAuction("Title3", "Flori", 0,false);
     }
