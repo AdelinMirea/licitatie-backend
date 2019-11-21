@@ -72,10 +72,24 @@ public class AuctionServiceTest {
 
         return auctionService.save(auction);
     }
-    @Test(expected = DataValidationException.class)
+    @Test
     public void addAuctionDTO() throws DataValidationException {
-        AuctionDTO auctionDTO = dtoUtils.auctionToAuctionDTO(auction2);
+        Category category = new Category();
+        category = categoryRepository.save(category);
+        User user = new User();
+        user.setId(9999);
+        user = userRepository.save(user);
+        AuctionDTO auctionDTO = new AuctionDTO();
+        auctionDTO.setTitle("Titlu frum");
         auctionDTO.setDescription("Mama Yo Quero Una Aprobacion");
+        auctionDTO.setOwnerId(user.getId());
+        auctionDTO.setCategoryId(9999);
+        auctionDTO.setBidsIds(new ArrayList<>());
+        auctionDTO.setClosed(false);
+        auctionDTO.setIsPrivate(false);
+        auctionDTO.setStartingPrice(0.0);
+        auctionDTO.setWinningBidId(1);
+        auctionDTO.setDateAdded(Date.valueOf(LocalDate.now().minusDays(0)));
         assertThat(auctionDTO.getDescription(),is("Mama Yo Quero Una Aprobacion"));
         auctionService.save(auctionDTO);
     }
