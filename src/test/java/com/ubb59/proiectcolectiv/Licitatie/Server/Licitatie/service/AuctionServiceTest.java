@@ -72,7 +72,7 @@ public class AuctionServiceTest {
 
         return auctionService.save(auction);
     }
-    @Test(expected = EntityExistsException.class)
+    @Test(expected = DataValidationException.class)
     public void addAuctionDTO() throws DataValidationException {
         AuctionDTO auctionDTO = dtoUtils.auctionToAuctionDTO(auction2);
         auctionDTO.setDescription("Mama Yo Quero Una Aprobacion");
