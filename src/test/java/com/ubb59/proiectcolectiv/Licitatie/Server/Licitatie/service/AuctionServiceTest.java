@@ -73,12 +73,10 @@ public class AuctionServiceTest {
     }
     @Test
     public void addAuctionDTO() throws DataValidationException {
-
         AuctionDTO auctionDTO = dtoUtils.auctionToAuctionDTO(auction2);
         auctionDTO.setDescription("Mama Yo Quero Una Aprobacion");
         assertThat(auctionDTO.getDescription(),is("Mama Yo Quero Una Aprobacion"));
         auctionService.save(auctionDTO);
-        assertThat(auctionService.findAll().size(), is(4));
     }
 
     @Test
