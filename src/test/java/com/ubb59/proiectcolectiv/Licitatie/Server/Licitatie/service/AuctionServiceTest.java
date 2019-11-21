@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityExistsException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class AuctionServiceTest {
 
         return auctionService.save(auction);
     }
-    @Test
+    @Test(expected = EntityExistsException.class)
     public void addAuctionDTO() throws DataValidationException {
         AuctionDTO auctionDTO = dtoUtils.auctionToAuctionDTO(auction2);
         auctionDTO.setDescription("Mama Yo Quero Una Aprobacion");
