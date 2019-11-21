@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -16,7 +17,7 @@ public class ImageUtilsTests {
 
     @After
     public void after() throws IOException {
-        for (File f : new File(ClassLoader.getSystemClassLoader().getResource("images").getPath().replace("%20", " ")).listFiles()) {
+        for (File f : new File(URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource("images").getPath(), "UTF-8")).listFiles()) {
             if (!f.getName().equals("testImage.JPG")) {
                 f.delete();
             }
@@ -34,7 +35,7 @@ public class ImageUtilsTests {
         String addedImageName = ImageUtils.addImage(encodedImage);
         URL path = ClassLoader.getSystemClassLoader().getResource("images");
         File image = new File(
-                ClassLoader.getSystemClassLoader().getResource("images/" + addedImageName).getFile().replace("%20", " ")
+                URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource("images/" + addedImageName).getPath(), "UTF-8")
         );
         assertThat(image.exists(), is(true));
     }
@@ -44,7 +45,7 @@ public class ImageUtilsTests {
         String encodedImage = ImageUtils.getEncodedImageFromImageName(imageName);
         String addedImageName = ImageUtils.addImage(encodedImage);
         File image = new File(
-                ClassLoader.getSystemClassLoader().getResource("images/" + addedImageName).getFile().replace("%20", " ")
+                URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource("images/" + addedImageName).getPath(), "UTF-8")
         );
         assertThat(image.exists(), is(true));
         ImageUtils.removeImage(addedImageName);
