@@ -54,10 +54,6 @@ public class AuctionService {
     public Auction save(AuctionDTO auction) throws DataValidationException {
         Auction newAuction = dtoUtils.auctionDTOToAuction(auction);
         validator.validateAuction(newAuction);
-        newAuction = save(newAuction);
-        if (newAuction == null){
-            throw new EntityExistsException("Auction already exists");
-        }
         return save(newAuction);
     }
 }
