@@ -2,10 +2,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.Validator;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -70,6 +67,27 @@ public class UserService {
             validator.validateUser(updatedUser);
             updatedUser.setPassword(DigestUtils.sha256Hex(newPassword));
             userRepository.save(updatedUser);
+        }
+    }
+
+    public void updateUserRating(String token, User user, Double rating) throws TokenException, SameUserException {
+        Optional<User> userOptional = userRepository.findByUserToken(token);
+        if(!userOptional.isPresent()){
+            throw new TokenException("Invalid token");
+        }else {
+            User givingRatingUser = userOptional.get();
+            if(givingRatingUser.getId() == user.getId()){
+                throw new SameUserException("User tries to give rating to himself.");
+            }
+            Integer oldNumberOfRatings = user.getNumberOfRatings();
+            Integer newNumberOfRatings = oldNumberOfRatings + 1;
+            Double oldRating = user.getRating();
+            Double newRating = (oldRating * oldNumberOfRatings + rating) / newNumberOfRatings;
+
+            user.setNumberOfRatings(newNumberOfRatings);
+            user.setRating(newRating);
+
+            userRepository.save(user);
         }
     }
 
