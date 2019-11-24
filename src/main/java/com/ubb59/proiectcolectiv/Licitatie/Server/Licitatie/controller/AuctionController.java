@@ -28,7 +28,7 @@ public class AuctionController {
         this.dtoUtils = dtoUtils;
     }
 
-    @PostMapping("/auctions/add")
+    @PostMapping("/auctions/post")
     public ResponseEntity<AuctionDTO> addAuction(@RequestBody AuctionDTO auctionDTO) {
         try {
 
