@@ -84,7 +84,9 @@ public class AuctionServiceTest {
     }
     @Test
     public void findAllActive(){
+         Auction auction4 = createAuction("Title1", "", 2,true);
         assertThat(auctionService.findAllActive().size(),is(2));
+
     }
 
 }
