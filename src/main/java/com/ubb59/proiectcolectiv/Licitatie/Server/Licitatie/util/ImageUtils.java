@@ -6,6 +6,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Base64;
 
 public class ImageUtils {
@@ -16,7 +17,7 @@ public class ImageUtils {
     private static File getImageFromName(String name) throws IOException {
         String path = BASE_PATH + name;
         File image = new File(
-                ClassLoader.getSystemClassLoader().getResource(path).getFile()
+                URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource(path).getPath(), "UTF-8")
         );
         boolean exists = image.exists();
         if (!exists) {
@@ -42,7 +43,7 @@ public class ImageUtils {
 
     private static File base64StringToImage(String encodedImage, String imageName) throws IOException {
         byte[] decodedBytes = Base64.getDecoder().decode(encodedImage);
-        String path = ClassLoader.getSystemClassLoader().getResource(BASE_PATH).getPath();
+        String path = URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource(BASE_PATH).getPath(), "UTF-8");
         File image = new File(path, imageName);
         if (image.createNewFile()) {
             FileUtils.writeByteArrayToFile(image, decodedBytes);
@@ -62,7 +63,7 @@ public class ImageUtils {
         String fileName;
         do {
             fileName = String.format("%s.%s", RandomStringUtils.randomAlphanumeric(32), EXTENSION);
-            File tempImage = new File(ClassLoader.getSystemClassLoader().getResource(BASE_PATH).getPath() + fileName);
+            File tempImage = new File(URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource(BASE_PATH).getPath() + fileName, "UTF-8"));
             exists = tempImage.exists();
         } while (exists);
         File image = base64StringToImage(encodedImage, fileName);
@@ -73,7 +74,7 @@ public class ImageUtils {
     }
 
     public static void removeImage(String fileName) throws IOException {
-        File image = new File(ClassLoader.getSystemClassLoader().getResource(BASE_PATH).getPath() + fileName);
+        File image = new File(URLDecoder.decode(ClassLoader.getSystemClassLoader().getResource(BASE_PATH).getPath() + fileName, "UTF-8"));
         boolean exists = image.exists();
         if (!exists) {
             throw new IOException("Image does not exist");

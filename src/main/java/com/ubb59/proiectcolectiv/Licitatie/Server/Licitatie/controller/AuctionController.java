@@ -3,8 +3,9 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.AuctionService;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.AuctionService
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,21 @@ public class AuctionController {
         List<AuctionDTO> auctions = auctionService.findAllActive();
         return new ResponseEntity<>(auctions, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/auctions")
+    public ResponseEntity<?>add(
+            @RequestParam(name = "auctionDTO") AuctionDTO auctionDTO
+    ){
+        try{
+            auctionService.save(auctionDTO);
+        }catch (DataValidationException e){
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(auctionDTO, HttpStatus.OK);
     }
 
 }
