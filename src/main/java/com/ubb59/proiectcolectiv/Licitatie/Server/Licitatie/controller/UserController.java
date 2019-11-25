@@ -8,6 +8,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.UserService;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.SameUserException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -81,6 +82,21 @@ public class UserController {
         }
     }
 
+    @PutMapping({"/users/{id}/rating"})
+    public ResponseEntity<UserDTO> updateUserRating(@PathVariable Integer id, @RequestHeader("token") String token, @RequestBody Double rating){
+        try {
+            User user = userService.getUserById(id);
+            userService.updateUserRating(token, user, rating);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (TokenException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (DataValidationException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (SameUserException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     @PostMapping({"/login"})
     public ResponseEntity<String> login(@RequestBody AuthenticationDTO authenticationDTO) {
         try {
@@ -90,5 +106,4 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
 }

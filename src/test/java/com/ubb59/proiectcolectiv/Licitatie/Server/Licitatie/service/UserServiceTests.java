@@ -5,6 +5,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.SameUserException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
@@ -54,7 +55,7 @@ public class UserServiceTests {
         user1.setBids(new ArrayList<>());
         user1.setComments(new ArrayList<>());
         user2 = new User();
-        user2.setUserToken("1");
+        user2.setUserToken("2");
         user2.setPassword("123456");
         user2.setFirstName("a");
         user2.setLastName("a");
@@ -169,5 +170,34 @@ public class UserServiceTests {
     public void updateUserPasswordInvalidData() throws DataValidationException, TokenException {
         userService.addUser(user1);
         userService.updateUserPassword(user1.getUserToken(), "123456", "aaaaa");
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Test
+    public void updateUserRating() throws TokenException, SameUserException, DataValidationException {
+        userService.addUser(user1);
+        userService.addUser(user2);
+
+        Integer newNumberOfRatings = user2.getNumberOfRatings() + 1;
+
+        userService.updateUserRating(user1.getUserToken(), user2, 4.0);
+
+        Optional<User> updatedUser = userRepository.findByUserToken(user2.getUserToken());
+        assertThat(updatedUser.isPresent(), is(true));
+        assertThat(updatedUser.get().getNumberOfRatings(), is(newNumberOfRatings));
+        assertThat(updatedUser.get().getRating(), is(2.5));
+    }
+
+    @Test(expected = TokenException.class)
+    public void updateUserRatingInvalidToken() throws DataValidationException, TokenException, SameUserException {
+        userService.addUser(user1);
+        userService.addUser(user2);
+        userService.updateUserRating("invalid_token", user2, 1.0);
+    }
+
+    @Test(expected = SameUserException.class)
+    public void updateUserRatingUserGivesRatingToHimself() throws DataValidationException, TokenException, SameUserException {
+        userService.addUser(user1);
+        userService.updateUserRating("1", user1, 1.0);
     }
 }
