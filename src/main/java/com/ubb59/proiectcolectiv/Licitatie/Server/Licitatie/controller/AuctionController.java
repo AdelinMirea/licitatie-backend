@@ -3,7 +3,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.AuctionService
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.AuctionService;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
