@@ -6,6 +6,8 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,7 @@ public class AuctionService {
     private AuctionRepository auctionRepository;
     private CategoryRepository categoryRepository;
     private DTOUtils dtoUtils;
+    private Validator validator;
 
     @Autowired
     public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, DTOUtils dtoUtils){
@@ -49,8 +53,9 @@ public class AuctionService {
         return auctionRepository.save(auction);
     }
 
-    public Auction save(AuctionDTO auction) {
+    public Auction save(AuctionDTO auction) throws DataValidationException {
         Auction newAuction = dtoUtils.auctionDTOToAuction(auction);
+        validator.validateAuction(newAuction);
         return save(newAuction);
     }
 }
