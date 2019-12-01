@@ -1,6 +1,11 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.*;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -8,18 +13,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityExistsException;
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class UserService {
 
     private UserRepository userRepository;
+    private AuctionRepository auctionRepository;
+    private BidRepository bidRepository;
     private Validator validator;
 
     @Autowired
-    public UserService(UserRepository userRepository, Validator validator) {
+    public UserService(UserRepository userRepository,
+                       AuctionRepository auctionRepository,
+                       BidRepository bidRepository,
+                       Validator validator) {
         this.userRepository = userRepository;
+        this.auctionRepository = auctionRepository;
+        this.bidRepository = bidRepository;
         this.validator = validator;
     }
 
@@ -102,5 +115,26 @@ public class UserService {
             throw new AuthenticationException("Wrong password");
         }
         return user.getUserToken();
+    }
+
+    public List<Auction> getAuctionsCreatedByUser(Integer id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if(user.isPresent()){
+            return auctionRepository.findAllByOwner(user.get());
+        }else{
+            throw new EntityNotFoundException();
+        }
+    }
+
+    public List<Auction> getAuctionsUserParticipated(Integer id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if(user.isPresent()){
+            List<Bid> bids = bidRepository.findAllByBidder(user.get());
+            return bids.parallelStream().map(Bid::getAuction).distinct().collect(Collectors.toList());
+        }else{
+            throw new EntityNotFoundException();
+        }
     }
 }
