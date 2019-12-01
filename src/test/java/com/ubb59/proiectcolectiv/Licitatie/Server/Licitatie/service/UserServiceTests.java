@@ -1,7 +1,11 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
@@ -34,9 +38,27 @@ public class UserServiceTests {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AuctionRepository auctionRepository;
+    @Autowired
+    private BidRepository bidRepository;
 
     private User user1;
     private User user2;
+
+    public void createAuctions(User aux){
+        Auction auction = new Auction();
+        auction.setOwner(aux);
+        auctionRepository.save(auction);
+        Auction auction2 = new Auction();
+        auction2.setOwner(aux);
+        auctionRepository.save(auction2);
+
+        Bid bid = new Bid();
+        bid.setAuction(auction);
+        bid.setBidder(aux);
+        bidRepository.save(bid);
+    }
 
     @Before
     public void setupUsers() {
@@ -157,7 +179,7 @@ public class UserServiceTests {
         userService.updateUserPassword(user1.getUserToken(), "123456", "aaaaaa");
         Optional<User> updatedUser = userRepository.findByUserToken(user1.getUserToken());
         assertThat(updatedUser.isPresent(), is(true));
-        assertThat(updatedUser.get().getPassword(), is( DigestUtils.sha256Hex("aaaaaa")));
+        assertThat(updatedUser.get().getPassword(), is(DigestUtils.sha256Hex("aaaaaa")));
     }
 
     @Test(expected = TokenException.class)
@@ -199,5 +221,19 @@ public class UserServiceTests {
     public void updateUserRatingUserGivesRatingToHimself() throws DataValidationException, TokenException, SameUserException {
         userService.addUser(user1);
         userService.updateUserRating("1", user1, 1.0);
+    }
+
+    @Test
+    public void getAuctionsCreatedByUser() {
+        User aux = userRepository.save(user1);
+        createAuctions(aux);
+        assertThat(userService.getAuctionsCreatedByUser(aux.getId()).size(), is(2));
+    }
+
+    @Test
+    public void getAuctionsUserParticipated() {
+        User aux = userRepository.save(user1);
+        createAuctions(aux);
+        assertThat(userService.getAuctionsUserParticipated(aux.getId()).size(), is(1));
     }
 }
