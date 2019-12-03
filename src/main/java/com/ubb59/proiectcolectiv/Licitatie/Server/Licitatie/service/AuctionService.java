@@ -8,7 +8,9 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionR
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityExistsException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,11 +34,12 @@ public class AuctionService {
     private Validator validator;
 
     @Autowired
-    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, UserRepository userRepository, DTOUtils dtoUtils) {
+    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, UserRepository userRepository, DTOUtils dtoUtils, Validator validator) {
         this.auctionRepository = auctionRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.dtoUtils = dtoUtils;
+        this.validator = validator;
     }
 
     public List<Auction> findAll() {

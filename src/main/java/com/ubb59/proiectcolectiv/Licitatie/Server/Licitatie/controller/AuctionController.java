@@ -37,9 +37,10 @@ public class AuctionController {
         return new ResponseEntity<>(auctions, HttpStatus.OK);
     }
     @GetMapping("/auctions/now")
-    public ResponseEntity<?>getAllActiveAuctions(){
+    public ResponseEntity<?>getAllActiveAuctions() {
         List<AuctionDTO> auctions = auctionService.findAllActive();
         return new ResponseEntity<>(auctions, HttpStatus.OK);
+    }
 
     @GetMapping("/auctions/byPreferences")
     public ResponseEntity<?> getAuctionsByPreferences(@RequestHeader("token") String token) {
