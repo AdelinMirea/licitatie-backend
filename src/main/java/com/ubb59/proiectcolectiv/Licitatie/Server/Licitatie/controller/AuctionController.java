@@ -4,6 +4,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.AuctionService;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,14 @@ public class AuctionController {
         List<AuctionDTO> auctions = auctionService.findAllActive();
         return new ResponseEntity<>(auctions, HttpStatus.OK);
 
+    @GetMapping("/auctions/byPreferences")
+    public ResponseEntity<?> getAuctionsByPreferences(@RequestHeader("token") String token) {
+        try {
+            List<AuctionDTO> auctions = auctionService.findAllActionsByUserPreferences(token);
+            return new ResponseEntity<>(auctions, HttpStatus.OK);
+        } catch (TokenException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @PostMapping("/auctions")

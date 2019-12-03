@@ -4,12 +4,10 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieAppli
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Category;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityExistsException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,24 +40,33 @@ public class AuctionServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    private Auction auction1, auction2,auction3;
+    private Auction auction1, auction2, auction3;
+    private User user;
+    private Category category1, category2, category3;
+
     @Before
-    public void setUp() throws Exception {
-        auction1 = createAuction("Title1", "Antidot la corazon", 2,true);
-        auction2 = createAuction("Title2", "Masina", 0,false);
-        auction3 = createAuction("Title3", "Flori", 0,false);
+    public void setUp() {
+        category1 = new Category();
+        category1 = categoryRepository.save(category1);
+        category2 = new Category();
+        category2 = categoryRepository.save(category2);
+        category3 = new Category();
+        category3 = categoryRepository.save(category3);
+        user = new User();
+        user.setCategories(Arrays.asList(category1, category2));
+        user.setUserToken("1");
+        user = userRepository.save(user);
+        auction1 = createAuction("Title1", "", 2, true, user, category1);
+        auction2 = createAuction("Title2", "Masina", 0, false, user, category2);
+        auction3 = createAuction("Title3", "Flori", 0, false, user, category3);
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         auctionRepository.deleteAll();
     }
 
-    public Auction createAuction(String title, String description, Integer minusDays,boolean closed){
-        Category category = new Category();
-        category = categoryRepository.save(category);
-        User user = new User();
-        user = userRepository.save(user);
+    public Auction createAuction(String title, String description, Integer minusDays, boolean closed, User user, Category category) {
         Auction auction = new Auction();
         auction.setTitle(title);
         auction.setDescription(description);
@@ -110,9 +116,16 @@ public class AuctionServiceTest {
         assertThat(auctionService.findAllSortedAndFiltered("dateAdded", "", 0, 10).size(), is(3));
         assertThat(auctionService.findAllSortedAndFiltered("dateAdded", "", 0, 10).get(0), is(dtoUtils.auctionToAuctionDTO(auction3)));
     }
+
     @Test
-    public void findAllActive(){
-        assertThat(auctionService.findAllActive().size(),is(2));
+    public void findAllActive() {
+        assertThat(auctionService.findAllActive().size(), is(2));
+    }
+
+    @Test
+    public void findAuctionsByUserPreference() throws TokenException {
+        List<AuctionDTO> auctionsDtos = auctionService.findAllActionsByUserPreferences(user.getUserToken());
+        assertThat(auctionsDtos, containsInAnyOrder(dtoUtils.auctionToAuctionDTO(auction1), dtoUtils.auctionToAuctionDTO(auction2)));
     }
 
 }
