@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
@@ -129,8 +131,11 @@ public class AuctionServiceTest {
 
     @Test
     public void findAuctionsByUserPreference() throws TokenException {
-        List<AuctionDTO> auctionsDtos = auctionService.findAllActionsByUserPreferences(user.getUserToken());
+        List<AuctionDTO> auctionsDtos = auctionService.findAllActionsByUserPreferences(user.getUserToken(), 0, 2);
         assertThat(auctionsDtos, containsInAnyOrder(dtoUtils.auctionToAuctionDTO(auction1), dtoUtils.auctionToAuctionDTO(auction2)));
+        List<AuctionDTO> auctionsDtos2 = auctionService.findAllActionsByUserPreferences(user.getUserToken(), 0, 1);
+        assertThat(auctionsDtos2, hasSize(1));
+        assertThat(Arrays.asList(dtoUtils.auctionToAuctionDTO(auction1), dtoUtils.auctionToAuctionDTO(auction2)), hasItem(auctionsDtos2.get(0)));
     }
 
 }

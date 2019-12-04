@@ -43,9 +43,11 @@ public class AuctionController {
     }
 
     @GetMapping("/auctions/byPreferences")
-    public ResponseEntity<?> getAuctionsByPreferences(@RequestHeader("token") String token) {
+    public ResponseEntity<?> getAuctionsByPreferences(@RequestHeader("token") String token,
+                                                      @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+                                                      @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber) {
         try {
-            List<AuctionDTO> auctions = auctionService.findAllActionsByUserPreferences(token);
+            List<AuctionDTO> auctions = auctionService.findAllActionsByUserPreferences(token, page, itemNumber);
             return new ResponseEntity<>(auctions, HttpStatus.OK);
         } catch (TokenException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

@@ -57,12 +57,12 @@ public class AuctionService {
         return auctionRepository.findAllByClosed(false).parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
     }
 
-    public List<AuctionDTO> findAllActionsByUserPreferences(String token) throws TokenException {
+    public List<AuctionDTO> findAllActionsByUserPreferences(String token, Integer page, Integer itemNumber) throws TokenException {
         Optional<User> user = userRepository.findByUserToken(token);
         if (!user.isPresent()) {
             throw new TokenException("Invalid token");
         } else {
-            List<Auction> auctions = auctionRepository.findAllByCategoryIn(user.get().getCategories());
+            List<Auction> auctions = auctionRepository.findAllByCategoryIn(user.get().getCategories(), PageRequest.of(page, itemNumber));
             return auctions
                     .parallelStream()
                     .map(auction -> dtoUtils.auctionToAuctionDTO(auction))
