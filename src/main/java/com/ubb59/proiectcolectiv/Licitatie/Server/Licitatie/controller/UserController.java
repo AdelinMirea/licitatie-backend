@@ -1,7 +1,12 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.*;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.VerificationToken;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UpdatePasswordDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnRegistrationSuccessEvent;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnRegistrationSuccessEvent;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.UserService;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
@@ -9,23 +14,26 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValida
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.SameUserException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Calendar;
+import java.util.Calendar;
 
 @RestController
 @CrossOrigin(
         origins = {"*"}
 )
 public class UserController {
-
+    @Autowired
     private UserService userService;
     private DTOUtils dtoUtils;
+
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public UserController(UserService userService, DTOUtils dtoUtils) {
@@ -45,6 +53,19 @@ public class UserController {
         } catch (EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
+    }
+    @DeleteMapping({"/users/{id}"})
+    public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
+        try {
+
+            userService.deleteUser(id);
+            return new ResponseEntity<>("User has been deleted", HttpStatus.OK);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } catch (TokenException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>("User not found",HttpStatus.OK);
     }
 
     @GetMapping({"/users/{id}"})
@@ -166,5 +187,37 @@ public class UserController {
         }
     }
 
+    @PostMapping("/registration")
+    public ResponseEntity<String> registerNewUser(@RequestBody AuthenticationDTO authenticationDTO) {
+        try {
+            String userToken = String.valueOf(System.currentTimeMillis());
+            User user = dtoUtils.createUserFromAuthentication(authenticationDTO, userToken);
+            user = userService.addUser(user);
+            String appUrl = "http://localhost:8080/register";
+
+            eventPublisher.publishEvent(new OnRegistrationSuccessEvent(user, appUrl));
+            return new ResponseEntity<>(user.getMail(), HttpStatus.OK);
+        } catch (DataValidationException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>("User Already Exist",HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/confirmRegistration/{token}")
+    public ResponseEntity<String> confirmRegistration(@PathVariable String token) {
+
+        VerificationToken verificationToken = userService.getVerificationToken(token);
+        if(verificationToken == null) {
+            return new ResponseEntity<>("Invalid link", HttpStatus.BAD_REQUEST);
+        }
+        User user = verificationToken.getUser();
+        Calendar calendar = Calendar.getInstance();
+        if((verificationToken.getExpiryDate().getTime()-calendar.getTime().getTime())<=0) {
+            return new ResponseEntity<>("Link expired, try to register again", HttpStatus.NOT_ACCEPTABLE);
+        }
+        userService.enableRegisteredUser(user);
+        return new ResponseEntity<>("User enabled", HttpStatus.OK);
+    }
 
 }

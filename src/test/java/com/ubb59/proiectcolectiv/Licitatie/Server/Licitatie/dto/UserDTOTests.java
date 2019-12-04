@@ -55,6 +55,7 @@ public class UserDTOTests {
         user.setRating(1.0);
         user.setVerified(true);
         user.setPremium(false);
+        user.setEnabled(false);
         user.setNoOfPrivateAuctions(0);
         user.setAuctions(new ArrayList<>(Collections.singletonList(auction)));
         user.setBids(new ArrayList<>(Collections.singletonList(bid)));
@@ -74,6 +75,7 @@ public class UserDTOTests {
         userDto.setRating(2.0);
         userDto.setVerified(false);
         userDto.setPremium(true);
+        userDto.setEnable(true);
         userDto.setNoOfPrivateAuctions(2);
         userDto.setAuctionsIds(new ArrayList<>(Collections.singletonList(2)));
         userDto.setBidsIds(new ArrayList<>(Collections.singletonList(3)));
@@ -94,6 +96,7 @@ public class UserDTOTests {
         assertThat(userDTO.getRating(), is(1.0));
         assertThat(userDTO.getVerified(), is(true));
         assertThat(userDTO.getPremium(), is(false));
+        assertThat(userDTO.getEnable(), is(false));
         assertThat(userDTO.getNoOfPrivateAuctions(), is(0));
         assertThat(userDTO.getAuctionsIds(), containsInAnyOrder(auction.getId()));
         assertThat(userDTO.getBidsIds(), containsInAnyOrder(bid.getId()));
@@ -118,6 +121,7 @@ public class UserDTOTests {
         assertThat(newUser.getRating(), is(2.0));
         assertThat(newUser.getVerified(), is(false));
         assertThat(newUser.getPremium(), is(true));
+        assertThat(newUser.getEnabled(), is(true));
         assertThat(newUser.getNoOfPrivateAuctions(), is(2));
         assertThat(newUser.getAuctions(), containsInAnyOrder(auction));
         assertThat(newUser.getBids(), containsInAnyOrder(bid));

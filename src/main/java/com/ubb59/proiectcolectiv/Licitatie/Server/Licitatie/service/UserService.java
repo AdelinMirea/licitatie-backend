@@ -1,9 +1,7 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.*;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.TokenRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,22 +22,20 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private UserRepository userRepository;
+    @Autowired
+    private TokenRepository tokenRepository;
     private AuctionRepository auctionRepository;
     private BidRepository bidRepository;
     private Validator validator;
     private CommentRepository commentRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository,
-                       AuctionRepository auctionRepository,
-                       BidRepository bidRepository,
-                       Validator validator,
-                       CommentRepository commentRepository) {
+    public UserService(UserRepository userRepository, TokenRepository tokenRepository, Validator validator) {
         this.userRepository = userRepository;
         this.auctionRepository = auctionRepository;
         this.bidRepository = bidRepository;
         this.validator = validator;
-        this.commentRepository = commentRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     public User addUser(User user) throws DataValidationException {
@@ -70,6 +67,16 @@ public class UserService {
         }
     }
 
+    public void deleteUser(int id) throws TokenException {
+        Optional<User> userOptional = userRepository.findById(id);
+        if(!userOptional.isPresent()){
+            throw new TokenException("Invalid token");
+        }else {
+            User u = userOptional.get();
+            userRepository.delete(u);
+        }
+
+    }
     public void updateUserPassword(String token, String oldPassword, String newPassword) throws TokenException, DataValidationException {
         Optional<User> userOptional = userRepository.findByUserToken(token);
         if(!userOptional.isPresent()){
@@ -119,6 +126,24 @@ public class UserService {
             throw new AuthenticationException("Wrong password");
         }
         return user.getUserToken();
+    }
+
+    public void createVerificationToken(User user, String token) {
+        VerificationToken newUserToken = new VerificationToken();
+        newUserToken.setUser(user);
+        newUserToken.setToken(token);
+        newUserToken.setExpiryDate(newUserToken.calculateExpiryDate(60*24));
+        tokenRepository.save(newUserToken);
+    }
+
+    public VerificationToken getVerificationToken(String verificationToken) {
+        return tokenRepository.findByToken(verificationToken);
+    }
+
+    public void enableRegisteredUser(User user) {
+
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 
     public List<Auction> getAuctionsCreatedByUser(Integer id) {
