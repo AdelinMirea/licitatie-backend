@@ -1,6 +1,7 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UpdatePasswordDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
@@ -16,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
@@ -83,7 +87,7 @@ public class UserController {
     }
 
     @PutMapping({"/users/{id}/rating"})
-    public ResponseEntity<UserDTO> updateUserRating(@PathVariable Integer id, @RequestHeader("token") String token, @RequestBody Double rating){
+    public ResponseEntity<UserDTO> updateUserRating(@PathVariable Integer id, @RequestHeader("token") String token, @RequestBody Double rating) {
         try {
             User user = userService.getUserById(id);
             userService.updateUserRating(token, user, rating);
@@ -106,4 +110,28 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping({"/users/{id}/auctions"})
+    public ResponseEntity<List<AuctionDTO>> getAuctionsCreatedByUser(@PathVariable Integer id) {
+        try {
+            List<AuctionDTO> auctions = userService.getAuctionsCreatedByUser(id)
+                    .parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
+            return new ResponseEntity<>(auctions, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping({"/users/{id}/auctions/participated"})
+    public ResponseEntity<List<AuctionDTO>> getAuctionsWithUserParticipated(@PathVariable Integer id) {
+        try {
+            List<AuctionDTO> auctions = userService.getAuctionsUserParticipated(id)
+                    .parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
+            return new ResponseEntity<>(auctions, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 }
