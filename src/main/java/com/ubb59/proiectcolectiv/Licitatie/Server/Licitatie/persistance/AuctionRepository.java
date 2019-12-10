@@ -16,4 +16,6 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer> {
     List<Auction> findAllByTitleContainingOrDescriptionContainingOrCategoryIn(String title, String descriprion, List<Category> category, Pageable of);
     List<Auction> findAllByClosed(Boolean closed);
     List<Auction> findAllByOwner(User owner);
+    List<Auction> findAllByCategoryIn(List<Category> categories);
+    List<Auction> findAllByCategoryIn(List<Category> categories, Pageable of);
 }
