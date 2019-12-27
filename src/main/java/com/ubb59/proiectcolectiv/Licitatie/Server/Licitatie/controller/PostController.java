@@ -28,7 +28,7 @@ public class PostController {
     }
 
     @PostMapping({"/posts/comments/{postId}"})
-    public ResponseEntity<String> addUser(@RequestBody CommentDTO commentDTO, @PathVariable Integer postId) {
+    public ResponseEntity<String> addComment(@RequestBody CommentDTO commentDTO, @PathVariable Integer postId) {
         Comment comment = dtoUtils.commentDTOToComment(commentDTO);
         try {
             postService.addComment(postId, comment);
