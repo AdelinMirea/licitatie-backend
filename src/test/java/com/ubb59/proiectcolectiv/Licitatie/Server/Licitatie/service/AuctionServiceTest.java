@@ -128,7 +128,7 @@ public class AuctionServiceTest {
 
     @Test
     public void findAllActive() {
-        assertThat(auctionService.findAllActive().size(), is(2));
+        assertThat(auctionService.findAllActive(0, 10).size(), is(2));
     }
 
     @Test
