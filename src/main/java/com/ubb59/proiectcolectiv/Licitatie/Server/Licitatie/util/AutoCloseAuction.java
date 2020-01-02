@@ -12,15 +12,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class AutoCloseAuction {
     private AuctionService auctionService;
-   @Autowired
+
+    @Autowired
     public AutoCloseAuction(AuctionService auctionService) {
         this.auctionService = auctionService;
     }
+    
 
-    @Autowired
-
-    @Scheduled(cron="0 0/15 * * * *")
-    public void autoCloseAuctions(){
+    @Scheduled(cron = "0 0/15 * * * *")
+    public void autoCloseAuctions() {
         log.info("Auto job for closing auctions runs");
         auctionService.closeAuctionsWithDueDatePassed();
     }
