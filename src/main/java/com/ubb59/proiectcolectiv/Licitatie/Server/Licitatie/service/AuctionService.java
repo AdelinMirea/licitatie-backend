@@ -18,6 +18,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,5 +80,21 @@ public class AuctionService {
         Auction newAuction = dtoUtils.auctionDTOToAuction(auction);
         validator.validateAuction(newAuction);
         return save(newAuction);
+    }
+
+    public Auction closeAction(Auction action) {
+        action.setClosed(true);
+        return auctionRepository.save(action);
+    }
+
+    public List<Auction> closeAuctionsWithDueDatePassed() {
+        List<Auction> closedAuctionList = new ArrayList<>();
+        auctionRepository.findAllByClosed(false).forEach(action -> {
+            if (action.getDueDate().after(new Timestamp(System.currentTimeMillis()))) {
+                closedAuctionList.add(this.closeAction(action));
+            }
+        });
+
+        return closedAuctionList;
     }
 }

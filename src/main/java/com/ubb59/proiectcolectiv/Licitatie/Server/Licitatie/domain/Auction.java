@@ -8,9 +8,9 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -25,6 +25,7 @@ public class Auction {
     private String title;
     private String description;
     private Date dateAdded;
+    private Timestamp dueDate;
     private Boolean closed;
     @ColumnDefault(value = "0.0")
     private Double startingPrice;

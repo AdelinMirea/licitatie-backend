@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class AuctionDTO {
     private String title;
     private String description;
     private Date dateAdded;
+    private Timestamp dueDate;
     private Boolean closed;
     private Double startingPrice;
     private Boolean isPrivate;
