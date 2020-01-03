@@ -37,8 +37,10 @@ public class AuctionController {
         return new ResponseEntity<>(auctions, HttpStatus.OK);
     }
     @GetMapping("/auctions/now")
-    public ResponseEntity<?>getAllActiveAuctions() {
-        List<AuctionDTO> auctions = auctionService.findAllActive();
+    public ResponseEntity<?>getAllActiveAuctions(@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+                                                 @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber
+    ) {
+        List<AuctionDTO> auctions = auctionService.findAllActive(page, itemNumber);
         return new ResponseEntity<>(auctions, HttpStatus.OK);
     }
 
