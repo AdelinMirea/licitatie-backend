@@ -58,6 +58,9 @@ public class AuctionService {
     public List<AuctionDTO> findAllActive(Integer page, Integer itemNumber) {
         return auctionRepository.findAllByClosed(false, PageRequest.of(page, itemNumber)).parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
     }
+    public List<AuctionDTO> findAllActive() {
+        return auctionRepository.findAllByClosed(false).parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
+    }
 
     public List<AuctionDTO> findAllActionsByUserPreferences(String token, Integer page, Integer itemNumber) throws TokenException {
         Optional<User> user = userRepository.findByUserToken(token);
