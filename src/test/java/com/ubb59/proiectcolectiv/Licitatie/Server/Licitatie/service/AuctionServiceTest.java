@@ -20,7 +20,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,9 +68,9 @@ public class AuctionServiceTest {
         user.setCategories(Arrays.asList(category1, category2));
         user.setUserToken("1");
         user = userRepository.save(user);
-        auction1 = createAuction("Title1", "", 2, true, user, category1);
-        auction2 = createAuction("Title2", "Masina", 0, false, user, category2);
-        auction3 = createAuction("Title3", "Flori", 0, false, user, category3);
+        auction1 = createAuction("Title1", "", 2,2, true, user, category1);
+        auction2 = createAuction("Title2", "Masina", 0,0, false, user, category2);
+        auction3 = createAuction("Title3", "Flori", 0,5, false, user, category3);
     }
 
     @After
@@ -75,7 +78,7 @@ public class AuctionServiceTest {
         auctionRepository.deleteAll();
     }
 
-    public Auction createAuction(String title, String description, Integer minusDays, boolean closed, User user, Category category) {
+    public Auction createAuction(String title, String description, Integer minusDays,Integer activeDays, boolean closed, User user, Category category) {
         Auction auction = new Auction();
         auction.setTitle(title);
         auction.setDescription(description);
@@ -84,6 +87,7 @@ public class AuctionServiceTest {
         auction.setBids(new ArrayList<>());
         auction.setClosed(closed);
         auction.setDateAdded(Date.valueOf(LocalDate.now().minusDays(minusDays)));
+        auction.setDueDate(Timestamp.valueOf(LocalDateTime.of(auction.getDateAdded().toLocalDate(), LocalTime.MIN).plusDays(activeDays)));
         auction.setImageNames(new ArrayList<>());
 
         return auctionService.save(auction);
@@ -98,6 +102,7 @@ public class AuctionServiceTest {
         AuctionDTO auctionDTO = new AuctionDTO();
         auctionDTO.setTitle("Titlu frum");
         auctionDTO.setDescription("Mama Yo Quero Una Aprobacion");
+        auctionDTO.setDueDate(Timestamp.valueOf(LocalDateTime.now()));
         auctionDTO.setOwnerId(user.getId());
         auctionDTO.setCategoryId(9999);
         auctionDTO.setBidsIds(new ArrayList<>());
@@ -138,6 +143,12 @@ public class AuctionServiceTest {
         List<AuctionDTO> auctionsDtos2 = auctionService.findAllActionsByUserPreferences(user.getUserToken(), 0, 1);
         assertThat(auctionsDtos2, hasSize(1));
         assertThat(Arrays.asList(dtoUtils.auctionToAuctionDTO(auction1), dtoUtils.auctionToAuctionDTO(auction2)), hasItem(auctionsDtos2.get(0)));
+    }
+    @Test
+    public void closeAuction(){
+        auctionService.closeAuctionsWithDueDatePassed();
+        assertThat(auctionService.findAllActive().size(), is(1));
+
     }
 
 }

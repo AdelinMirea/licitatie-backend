@@ -160,6 +160,7 @@ public class DTOUtils {
         if (auctionDTO.getDateAdded() == null) {
             updatedAuction.setDateAdded(Date.valueOf(LocalDate.now()));
         }
+        updatedAuction.setDueDate(auction.getDueDate());
         updatedAuction.setId(auction.getId());
         updatedAuction.setTitle(auctionDTO.getTitle());
         updatedAuction.setClosed(auctionDTO.getClosed());
@@ -184,6 +185,7 @@ public class DTOUtils {
         auctionDTO.setClosed(auction.getClosed());
         auctionDTO.setDescription(auction.getDescription());
         auctionDTO.setDateAdded(auction.getDateAdded());
+        auctionDTO.setDueDate(auction.getDueDate());
         auctionDTO.setOwnerId(auction.getOwner().getId());
         auctionDTO.setCategoryId(auction.getCategory().getId());
         auctionDTO.setStartingPrice(auction.getStartingPrice());
