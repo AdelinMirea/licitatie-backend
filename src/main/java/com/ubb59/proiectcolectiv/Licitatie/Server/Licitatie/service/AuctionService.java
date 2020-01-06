@@ -93,7 +93,7 @@ public class AuctionService {
     public List<Auction> closeAuctionsWithDueDatePassed() {
         List<Auction> closedAuctionList = new ArrayList<>();
         auctionRepository.findAllByClosed(false).forEach(action -> {
-            if (action.getDueDate().after(new Timestamp(System.currentTimeMillis()))) {
+            if (action.getDueDate().before(new Timestamp(System.currentTimeMillis()))) {
                 closedAuctionList.add(this.closeAction(action));
             }
         });
