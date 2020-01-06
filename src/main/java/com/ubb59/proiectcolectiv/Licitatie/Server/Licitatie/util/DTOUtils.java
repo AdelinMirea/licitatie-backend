@@ -318,4 +318,20 @@ public class DTOUtils {
         postDTO.setCommentsIds(commentsIds);
         return postDTO;
     }
+
+    public CategoryDTO categoryToCategoryDTO(Category category){
+        CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setId(category.getId());
+        categoryDTO.setName(category.getName());
+        return categoryDTO;
+    }
+
+    public Category categoryDtoToCategory(CategoryDTO categoryDTO){
+        Category category = new Category();
+        category.setId(categoryDTO.getId());
+        category.setName(categoryDTO.getName());
+        category.setAuctions(new ArrayList<>());
+        category.setUsers(new ArrayList<>());
+        return category;
+    }
 }
