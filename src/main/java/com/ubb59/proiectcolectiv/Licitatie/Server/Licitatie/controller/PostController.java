@@ -39,7 +39,7 @@ public class PostController {
         }
     }
 
-    @GetMapping({"/posts/auctions/{auctionId}"})
+    @GetMapping({"/posts/auction/{auctionId}"})
     public ResponseEntity<PostDTO> getPostByAuctionId(@PathVariable Integer auctionId) {
         try {
             PostDTO postDTO = postService.getPostByAuctionId(auctionId);
