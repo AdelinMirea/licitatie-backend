@@ -1,8 +1,11 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Post;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.PostDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CommentRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.PostRepository;
 import org.junit.Before;
@@ -31,13 +34,20 @@ public class PostServiceTest {
     private PostRepository postRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private AuctionRepository auctionRepository;
 
     private Post post;
     private Comment comment;
+    private Auction auction;
 
     @Before
     public void setup() {
+        auction = new Auction();
+        auction.setId(0);
+        auction = auctionRepository.save(auction);
         post = new Post();
+        post.setAuction(auction);
         post.setComments(new ArrayList<>());
         postRepository.save(post);
 
@@ -57,4 +67,10 @@ public class PostServiceTest {
         postService.addComment(2, comment);
     }
 
+    @Test
+    public void getPostByAuctionId() {
+        PostDTO postDTO = postService.getPostByAuctionId(auction.getId());
+        assertThat(postDTO.getId(), is(post.getId()));
+        assertThat(postDTO.getAuctionId(), is(auction.getId()));
+    }
 }
