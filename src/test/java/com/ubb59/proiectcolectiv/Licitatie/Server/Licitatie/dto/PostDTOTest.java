@@ -87,4 +87,5 @@ public class PostDTOTest {
         assertThat(post.getAuction().getId(), is(2));
         assertThat(post.getComments().size(), is(0));
     }
+
 }
