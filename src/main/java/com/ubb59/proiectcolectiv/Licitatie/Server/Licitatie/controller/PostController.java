@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 
 @RestController
@@ -46,6 +47,18 @@ public class PostController {
             return new ResponseEntity<>(postDTO, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping({"/posts/{postId}/comments"})
+    public ResponseEntity<List<CommentDTO>> getCommentsForPost(@PathVariable Integer postId,
+                                                               @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+                                                               @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber) {
+        try {
+            List<CommentDTO> commentDTOS = postService.getComments(postId, page, itemNumber);
+            return new ResponseEntity<>(commentDTOS, HttpStatus.OK);
+        }catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
