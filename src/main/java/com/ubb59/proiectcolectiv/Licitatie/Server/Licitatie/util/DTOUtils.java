@@ -284,8 +284,8 @@ public class DTOUtils {
         commentDTO.setContent(comment.getContent());
         commentDTO.setDatePosted(comment.getDatePosted());
         commentDTO.setUserId(comment.getUser().getId());
+        commentDTO.setUserName(comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
         commentDTO.setPostId(comment.getPost().getId());
-
         return commentDTO;
     }
 
@@ -319,14 +319,14 @@ public class DTOUtils {
         return postDTO;
     }
 
-    public CategoryDTO categoryToCategoryDTO(Category category){
+    public CategoryDTO categoryToCategoryDTO(Category category) {
         CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setId(category.getId());
         categoryDTO.setName(category.getName());
         return categoryDTO;
     }
 
-    public Category categoryDtoToCategory(CategoryDTO categoryDTO){
+    public Category categoryDtoToCategory(CategoryDTO categoryDTO) {
         Category category = new Category();
         category.setId(categoryDTO.getId());
         category.setName(categoryDTO.getName());

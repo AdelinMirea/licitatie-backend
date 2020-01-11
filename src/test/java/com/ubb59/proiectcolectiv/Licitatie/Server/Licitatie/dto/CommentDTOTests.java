@@ -43,6 +43,8 @@ public class CommentDTOTests {
 
         user1 = new User();
         user1.setId(1);
+        user1.setFirstName("John");
+        user1.setLastName("Marsch");
         user2 = new User();
         user2.setId(2);
 
@@ -80,6 +82,8 @@ public class CommentDTOTests {
         assertThat(commentDTO.getContent(), is("Content1"));
         assertThat(commentDTO.getDatePosted(), is(date1));
         assertThat(commentDTO.getUserId(), is(1));
+        assertThat(commentDTO.getUserName(), is("John Marsch"));
+        assertThat(commentDTO.getPostId(), is(1));
         assertThat(commentDTO.getPostId(), is(1));
     }
 
