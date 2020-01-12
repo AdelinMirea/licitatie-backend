@@ -101,6 +101,19 @@ public class UserController {
         }
     }
 
+    @PutMapping({"/users/{id}/credits"})
+    public ResponseEntity<UserDTO> updateUserCredits(@PathVariable Integer id, @RequestHeader("token") String token, @RequestBody Double credits){
+        try {
+            User user = userService.getUserById(id);
+            userService.updateUserCredit(token, user, credits);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (TokenException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (DataValidationException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+
     @PostMapping({"/login"})
     public ResponseEntity<String> login(@RequestBody AuthenticationDTO authenticationDTO) {
         try {
