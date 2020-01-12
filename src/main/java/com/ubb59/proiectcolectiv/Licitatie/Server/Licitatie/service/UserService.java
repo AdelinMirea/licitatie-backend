@@ -137,4 +137,14 @@ public class UserService {
             throw new EntityNotFoundException();
         }
     }
+
+    public void updateUserCredit(String token, User user, Double credits) throws TokenException {
+        Optional<User> userOptional = userRepository.findByUserToken(token);
+        if(!userOptional.isPresent()){
+            throw new TokenException("Invalid token");
+        }else {
+            user.setNumberOfCredits(credits);
+            userRepository.save(user);
+        }
+    }
 }
