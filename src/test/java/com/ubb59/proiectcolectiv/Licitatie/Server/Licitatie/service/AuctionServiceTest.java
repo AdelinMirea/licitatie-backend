@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -149,6 +150,29 @@ public class AuctionServiceTest {
         auctionService.closeAuctionsWithDueDatePassed();
         assertThat(auctionService.findAllActive().size(), is(1));
 
+    }
+
+    @Test
+    public void getEndingAuctions(){
+        Timestamp timestamp1 = new Timestamp(new java.util.Date().getTime());
+        int duration = 12*60*60*1000;
+        timestamp1.setTime(timestamp1.getTime() + duration);
+        Auction auction = new Auction();
+        auction.setDueDate(timestamp1);
+        auction.setOwner(user);
+        auction.setCategory(category1);
+        auctionService.save(auction);
+
+        Timestamp timestamp2 = new Timestamp(new java.util.Date().getTime());
+        duration = 36*60*60*1000;
+        timestamp2.setTime(timestamp2.getTime() + duration);
+
+        Auction auction2 = new Auction();
+        auction2.setDueDate(timestamp2);
+        auction2.setOwner(user);
+        auction2.setCategory(category1);
+        auctionService.save(auction2);
+        assertThat(auctionService.findAllEnding().size(), is(1));
     }
 
 }

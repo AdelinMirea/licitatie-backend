@@ -19,9 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -99,5 +97,18 @@ public class AuctionService {
         });
 
         return closedAuctionList;
+    }
+
+    public List<AuctionDTO> findAllEnding() {
+        Timestamp timestamp1 = new Timestamp(new Date().getTime());
+        Timestamp timestamp2 = new Timestamp(new Date().getTime());
+        int duration = 24*60*60*1000;
+        timestamp2.setTime(timestamp2.getTime() + duration);
+        List<Auction> auctions = auctionRepository.findByDueDateBetween(timestamp1, timestamp2);
+
+        return auctions
+                .parallelStream()
+                .map(auction -> dtoUtils.auctionToAuctionDTO(auction))
+                .collect(Collectors.toList());
     }
 }

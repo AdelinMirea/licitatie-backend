@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -19,4 +20,5 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer> {
     List<Auction> findAllByOwner(User owner);
     List<Auction> findAllByCategoryIn(List<Category> categories);
     List<Auction> findAllByCategoryIn(List<Category> categories, Pageable of);
+    List<Auction> findByDueDateBetween(Timestamp timestamp1, Timestamp timestamp2);
 }

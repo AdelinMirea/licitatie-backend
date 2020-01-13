@@ -22,7 +22,7 @@ public class AuctionController {
     private AuctionService auctionService;
 
     @Autowired
-    public AuctionController(AuctionService auctionService){
+    public AuctionController(AuctionService auctionService) {
         this.auctionService = auctionService;
     }
 
@@ -32,13 +32,14 @@ public class AuctionController {
             @RequestParam(name = "filter", defaultValue = "", required = false) String filter,
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber
-    ){
+    ) {
         List<AuctionDTO> auctions = auctionService.findAllSortedAndFiltered(sortBy, filter, page, itemNumber);
         return new ResponseEntity<>(auctions, HttpStatus.OK);
     }
+
     @GetMapping("/auctions/now")
-    public ResponseEntity<?>getAllActiveAuctions(@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-                                                 @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber
+    public ResponseEntity<?> getAllActiveAuctions(@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+                                                  @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber
     ) {
         List<AuctionDTO> auctions = auctionService.findAllActive(page, itemNumber);
         return new ResponseEntity<>(auctions, HttpStatus.OK);
@@ -57,18 +58,24 @@ public class AuctionController {
     }
 
     @PostMapping("/auctions")
-    public ResponseEntity<?>add(
+    public ResponseEntity<?> add(
             @RequestParam(name = "auctionDTO") AuctionDTO auctionDTO
-    ){
-        try{
+    ) {
+        try {
             auctionService.save(auctionDTO);
-        }catch (DataValidationException e){
+        } catch (DataValidationException e) {
             return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        catch (EntityExistsException e) {
+        } catch (EntityExistsException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>(auctionDTO, HttpStatus.OK);
     }
+
+    @GetMapping("/auctions/edge")
+    public ResponseEntity<?> getEndingAuctions() {
+        List<AuctionDTO> auctions = auctionService.findAllEnding();
+        return new ResponseEntity<>(auctions, HttpStatus.OK);
+    }
+
 
 }
