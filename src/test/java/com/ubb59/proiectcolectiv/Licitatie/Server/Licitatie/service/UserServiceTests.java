@@ -247,15 +247,15 @@ public class UserServiceTests {
     @Test
     public void getAuctionsUserParticipated() {
         User aux = userRepository.save(user1);
-        createComments(aux);
+        createAuctions(aux);
         assertThat(userService.getAuctionsUserParticipated(aux.getId()).size(), is(1));
     }
 
     @Test
     public void getCommentsCreatedByUser() {
         User aux = userRepository.save(user1);
-        createAuctions(aux);
-        assertThat(userService.getAuctionsCreatedByUser(aux.getId()).size(), is(2));
+        createComments(aux);
+        assertThat(userService.getCommentsCreatedByUser(aux.getId()).size(), is(2));
     }
 
     @Test
