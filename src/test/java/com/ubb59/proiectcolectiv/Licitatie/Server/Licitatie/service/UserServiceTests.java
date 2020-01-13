@@ -3,9 +3,11 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.ServerLicitatieApplication;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CommentRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
@@ -42,6 +44,8 @@ public class UserServiceTests {
     private AuctionRepository auctionRepository;
     @Autowired
     private BidRepository bidRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     private User user1;
     private User user2;
@@ -58,6 +62,16 @@ public class UserServiceTests {
         bid.setAuction(auction);
         bid.setBidder(aux);
         bidRepository.save(bid);
+    }
+
+
+    public void createComments(User aux){
+        Comment comment = new Comment();
+        comment.setUser(aux);
+        commentRepository.save(comment);
+        Comment comment2 = new Comment();
+        comment2.setUser(aux);
+        commentRepository.save(comment2);
     }
 
     @Before
@@ -233,7 +247,27 @@ public class UserServiceTests {
     @Test
     public void getAuctionsUserParticipated() {
         User aux = userRepository.save(user1);
-        createAuctions(aux);
+        createComments(aux);
         assertThat(userService.getAuctionsUserParticipated(aux.getId()).size(), is(1));
+    }
+
+    @Test
+    public void getCommentsCreatedByUser() {
+        User aux = userRepository.save(user1);
+        createAuctions(aux);
+        assertThat(userService.getAuctionsCreatedByUser(aux.getId()).size(), is(2));
+    }
+
+    @Test
+    public void getUserByToken() throws DataValidationException {
+        userService.addUser(user1);
+        User user = userService.getUserByToken("1");
+        assertThat(user.getLastName(), is("a"));
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void getUserByTokenException() throws DataValidationException {
+        User user = userService.getUserByToken("3");
+        assertThat(user.getLastName(), is("a"));
     }
 }
