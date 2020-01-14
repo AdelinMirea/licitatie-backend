@@ -9,6 +9,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionR
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityNotFoundException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -69,9 +71,9 @@ public class AuctionServiceTest {
         user.setCategories(Arrays.asList(category1, category2));
         user.setUserToken("1");
         user = userRepository.save(user);
-        auction1 = createAuction("Title1", "", 2,2, true, user, category1);
-        auction2 = createAuction("Title2", "Masina", 0,0, false, user, category2);
-        auction3 = createAuction("Title3", "Flori", 0,5, false, user, category3);
+        auction1 = createAuction("Title1", "", 2, 2, true, user, category1);
+        auction2 = createAuction("Title2", "Masina", 0, 0, false, user, category2);
+        auction3 = createAuction("Title3", "Flori", 0, 5, false, user, category3);
     }
 
     @After
@@ -79,7 +81,7 @@ public class AuctionServiceTest {
         auctionRepository.deleteAll();
     }
 
-    public Auction createAuction(String title, String description, Integer minusDays,Integer activeDays, boolean closed, User user, Category category) {
+    public Auction createAuction(String title, String description, Integer minusDays, Integer activeDays, boolean closed, User user, Category category) {
         Auction auction = new Auction();
         auction.setTitle(title);
         auction.setDescription(description);
@@ -93,6 +95,7 @@ public class AuctionServiceTest {
 
         return auctionService.save(auction);
     }
+
     @Test
     public void addAuctionDTO() throws Exception {
         Category category = new Category();
@@ -112,10 +115,10 @@ public class AuctionServiceTest {
         auctionDTO.setStartingPrice(0.0);
         auctionDTO.setWinningBidId(1);
         auctionDTO.setDateAdded(Date.valueOf(LocalDate.now().minusDays(0)));
-        assertThat(auctionDTO.getDescription(),is("Mama Yo Quero Una Aprobacion"));
+        assertThat(auctionDTO.getDescription(), is("Mama Yo Quero Una Aprobacion"));
         try {
             auctionService.save(auctionDTO);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -145,17 +148,18 @@ public class AuctionServiceTest {
         assertThat(auctionsDtos2, hasSize(1));
         assertThat(Arrays.asList(dtoUtils.auctionToAuctionDTO(auction1), dtoUtils.auctionToAuctionDTO(auction2)), hasItem(auctionsDtos2.get(0)));
     }
+
     @Test
-    public void closeAuction(){
+    public void closeAuction() {
         auctionService.closeAuctionsWithDueDatePassed();
         assertThat(auctionService.findAllActive().size(), is(1));
 
     }
 
     @Test
-    public void getEndingAuctions(){
+    public void getEndingAuctions() {
         Timestamp timestamp1 = new Timestamp(new java.util.Date().getTime());
-        int duration = 12*60*60*1000;
+        int duration = 12 * 60 * 60 * 1000;
         timestamp1.setTime(timestamp1.getTime() + duration);
         Auction auction = new Auction();
         auction.setDueDate(timestamp1);
@@ -164,7 +168,7 @@ public class AuctionServiceTest {
         auctionService.save(auction);
 
         Timestamp timestamp2 = new Timestamp(new java.util.Date().getTime());
-        duration = 36*60*60*1000;
+        duration = 36 * 60 * 60 * 1000;
         timestamp2.setTime(timestamp2.getTime() + duration);
 
         Auction auction2 = new Auction();
@@ -173,6 +177,24 @@ public class AuctionServiceTest {
         auction2.setCategory(category1);
         auctionService.save(auction2);
         assertThat(auctionService.findAllEnding().size(), is(1));
+    }
+
+    @Test
+    public void endAuction() throws DataValidationException {
+        auction2 = auctionService.save(auction2);
+        AuctionDTO auctionDTO = auctionService.endAuction(auction2.getId());
+        assertThat(auctionDTO.getClosed(), is(true));
+    }
+
+    @Test(expected = DataValidationException.class)
+    public void endAuctionThrowsDataValidationEx() throws DataValidationException {
+        int id = auctionService.save(auction1).getId();
+        auctionService.endAuction(id);
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void endAuctionThrowsEntityNotFoundEx() throws DataValidationException {
+        auctionService.endAuction(10);
     }
 
 }
