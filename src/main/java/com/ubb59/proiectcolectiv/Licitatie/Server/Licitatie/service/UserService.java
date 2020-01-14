@@ -2,10 +2,12 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Comment;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CommentRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.*;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -24,16 +26,19 @@ public class UserService {
     private AuctionRepository auctionRepository;
     private BidRepository bidRepository;
     private Validator validator;
+    private CommentRepository commentRepository;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        AuctionRepository auctionRepository,
                        BidRepository bidRepository,
-                       Validator validator) {
+                       Validator validator,
+                       CommentRepository commentRepository) {
         this.userRepository = userRepository;
         this.auctionRepository = auctionRepository;
         this.bidRepository = bidRepository;
         this.validator = validator;
+        this.commentRepository = commentRepository;
     }
 
     public User addUser(User user) throws DataValidationException {
@@ -48,7 +53,6 @@ public class UserService {
 
     public User getUserById(Integer id) throws DataValidationException {
         return userRepository.findById(id).orElseThrow(() -> new DataValidationException("User does not exist"));
-
     }
 
     public User updateUser(String token, String firstName, String lastName, String email) throws TokenException, DataValidationException {
@@ -145,6 +149,20 @@ public class UserService {
         }else {
             user.setNumberOfCredits(credits);
             userRepository.save(user);
+        }
+    }
+
+    public User getUserByToken(String token) throws DataValidationException {
+        return userRepository.findByUserToken(token).orElseThrow(() -> new DataValidationException("User does not exist"));
+    }
+
+    public List<Comment> getCommentsCreatedByUser(Integer id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if(user.isPresent()){
+            return commentRepository.findAllByUser(user.get());
+        }else{
+            throw new EntityNotFoundException();
         }
     }
 }

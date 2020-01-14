@@ -1,10 +1,7 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UpdatePasswordDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.*;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.UserService;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.AuthenticationException;
@@ -54,6 +51,18 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
         try {
             User user = userService.getUserById(id);
+            return new ResponseEntity<>(dtoUtils.userToUserDTO(user), HttpStatus.OK);
+        } catch (DataValidationException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping({"/users/{token}"})
+    public ResponseEntity<UserDTO> getUserByToken(@PathVariable String token) {
+        try {
+            User user = userService.getUserByToken(token);
             return new ResponseEntity<>(dtoUtils.userToUserDTO(user), HttpStatus.OK);
         } catch (DataValidationException e) {
             return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -141,6 +150,17 @@ public class UserController {
             List<AuctionDTO> auctions = userService.getAuctionsUserParticipated(id)
                     .parallelStream().map(dtoUtils::auctionToAuctionDTO).collect(Collectors.toList());
             return new ResponseEntity<>(auctions, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping({"/users/{id}/comments"})
+    public ResponseEntity<List<CommentDTO>> getCommentsCreatedByUser(@PathVariable Integer id) {
+        try {
+            List<CommentDTO> comments = userService.getCommentsCreatedByUser(id)
+                    .parallelStream().map(dtoUtils::commentToCommentDTO).collect(Collectors.toList());
+            return new ResponseEntity<>(comments, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
