@@ -13,10 +13,14 @@ import java.util.UUID;
 @Component
 public class RegistrationEmailListener implements ApplicationListener<OnRegistrationSuccessEvent> {
 
+    private final UserService userService;
+    private final MailSender mailSender;
+
     @Autowired
-    private UserService userService;
-    @Autowired
-    private MailSender mailSender;
+    public RegistrationEmailListener(UserService userService, MailSender mailSender) {
+        this.userService = userService;
+        this.mailSender = mailSender;
+    }
 
     @Override
     public void onApplicationEvent(OnRegistrationSuccessEvent event) {
@@ -26,10 +30,10 @@ public class RegistrationEmailListener implements ApplicationListener<OnRegistra
     private void confirmRegistration(OnRegistrationSuccessEvent event) {
         User user = event.getUser();
         String token = UUID.randomUUID().toString();
-        userService.createVerificationToken(user,token);
+        userService.createVerificationToken(user, token);
         String recipient = user.getMail();
         String subject = "Registration Confirmation";
-        String url = event.getAppUrl() + "/confirmRegistration?token=" + token;
+        String url = event.getAppUrl() + "/confirmRegistration/" + token;
         String message = "Thank you for registering. Please click on the below link to activate your account.\n";
 
         SimpleMailMessage email = new SimpleMailMessage();

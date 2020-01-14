@@ -14,6 +14,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValida
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.SameUserException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,17 +29,18 @@ import java.util.Calendar;
         origins = {"*"}
 )
 public class UserController {
-    @Autowired
     private UserService userService;
     private DTOUtils dtoUtils;
+    private ApplicationEventPublisher eventPublisher;
+
+    @Value("${appUrl}")
+    private String appUrl;
 
     @Autowired
-    ApplicationEventPublisher eventPublisher;
-
-    @Autowired
-    public UserController(UserService userService, DTOUtils dtoUtils) {
+    public UserController(UserService userService, DTOUtils dtoUtils, ApplicationEventPublisher eventPublisher) {
         this.userService = userService;
         this.dtoUtils = dtoUtils;
+        this.eventPublisher = eventPublisher;
     }
 
     @PostMapping({"/users"})
@@ -193,14 +195,12 @@ public class UserController {
             String userToken = String.valueOf(System.currentTimeMillis());
             User user = dtoUtils.createUserFromAuthentication(authenticationDTO, userToken);
             user = userService.addUser(user);
-            String appUrl = "http://localhost:8080/register";
-
             eventPublisher.publishEvent(new OnRegistrationSuccessEvent(user, appUrl));
             return new ResponseEntity<>(user.getMail(), HttpStatus.OK);
         } catch (DataValidationException e) {
             return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (EntityExistsException e) {
-            return new ResponseEntity<>("User Already Exist",HttpStatus.CONFLICT);
+            return new ResponseEntity<>("User Already Exists",HttpStatus.CONFLICT);
         }
     }
 

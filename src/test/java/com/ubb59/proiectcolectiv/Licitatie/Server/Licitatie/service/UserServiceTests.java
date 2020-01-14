@@ -241,6 +241,7 @@ public class UserServiceTests {
     @Test
     public void enableRegisteredUser()  {
         userService.enableRegisteredUser(user1);
+        assertThat(user1.getEnabled(), is(true));
     }
 
     @Test
