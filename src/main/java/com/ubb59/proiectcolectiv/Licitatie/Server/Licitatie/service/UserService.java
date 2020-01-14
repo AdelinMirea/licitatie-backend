@@ -2,7 +2,6 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.*;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.TokenRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CommentRepository;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,12 +28,13 @@ public class UserService {
     private CommentRepository commentRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, TokenRepository tokenRepository, Validator validator) {
+    public UserService(UserRepository userRepository, TokenRepository tokenRepository, AuctionRepository auctionRepository, BidRepository bidRepository, Validator validator, CommentRepository commentRepository) {
         this.userRepository = userRepository;
         this.auctionRepository = auctionRepository;
         this.bidRepository = bidRepository;
         this.validator = validator;
         this.tokenRepository = tokenRepository;
+        this.commentRepository = commentRepository;
     }
 
     public User addUser(User user) throws DataValidationException {
