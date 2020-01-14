@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -110,5 +111,14 @@ public class AuctionService {
                 .parallelStream()
                 .map(auction -> dtoUtils.auctionToAuctionDTO(auction))
                 .collect(Collectors.toList());
+    }
+
+    public AuctionDTO endAuction(Integer id) throws EntityNotFoundException, DataValidationException {
+        Auction auction = auctionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Auction does not exist"));
+        if(auction.getClosed()){
+            throw new DataValidationException("Auction already closed");
+        }
+        auction.setClosed(true);
+        return dtoUtils.auctionToAuctionDTO(auctionRepository.save(auction));
     }
 }

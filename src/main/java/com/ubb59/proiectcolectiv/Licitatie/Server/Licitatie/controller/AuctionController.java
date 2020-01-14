@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -77,5 +78,15 @@ public class AuctionController {
         return new ResponseEntity<>(auctions, HttpStatus.OK);
     }
 
+    @PostMapping("/auctions/end/{id}")
+    public ResponseEntity<AuctionDTO> endAuction(@PathVariable Integer id) {
+        try {
+            return new ResponseEntity<AuctionDTO>(auctionService.endAuction(id), HttpStatus.OK);
+        } catch (DataValidationException e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }
