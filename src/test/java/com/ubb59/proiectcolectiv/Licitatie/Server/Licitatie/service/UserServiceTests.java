@@ -87,6 +87,7 @@ public class UserServiceTests {
         user1.setLastActive(new Date(1));
         user1.setRating(1.0);
         user1.setVerified(true);
+        user1.setEnabled(false);
         user1.setAuctions(new ArrayList<>());
         user1.setBids(new ArrayList<>());
         user1.setComments(new ArrayList<>());
@@ -235,6 +236,12 @@ public class UserServiceTests {
     public void updateUserRatingUserGivesRatingToHimself() throws DataValidationException, TokenException, SameUserException {
         userService.addUser(user1);
         userService.updateUserRating("1", user1, 1.0);
+    }
+
+    @Test
+    public void enableRegisteredUser()  {
+        userService.enableRegisteredUser(user1);
+        assertThat(user1.getEnabled(), is(true));
     }
 
     @Test

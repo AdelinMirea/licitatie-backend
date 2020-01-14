@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityExistsException;
-import java.awt.*;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -54,6 +53,7 @@ public class DTOUtils {
         userDTO.setVerified(user.getVerified());
         userDTO.setPremium(user.getPremium());
         userDTO.setNoOfPrivateAuctions(user.getNoOfPrivateAuctions());
+        userDTO.setEnable(user.getEnabled());
         List<Integer> bidsIds = user.getBids().stream()
                 .map(Bid::getId)
                 .collect(Collectors.toList());
@@ -101,6 +101,7 @@ public class DTOUtils {
         updatedUser.setNumberOfCredits(userDTO.getNumberOfCredits());
         updatedUser.setVerified(userDTO.getVerified());
         updatedUser.setPremium(userDTO.getPremium());
+        updatedUser.setEnabled(userDTO.getEnable());
         updatedUser.setNoOfPrivateAuctions(userDTO.getNoOfPrivateAuctions());
         updatedUser.setBids(bids);
         updatedUser.setAuctions(auctions);
@@ -126,6 +127,7 @@ public class DTOUtils {
             user.setNumberOfRatings(0);
             user.setPremium(false);
             user.setNoOfPrivateAuctions(0);
+            user.setEnabled(false);
             //arbitrary date, we should know somehow that the user is new in the system
             user.setLastActive(Date.valueOf(LocalDate.of(2000, 1, 1)));
             user.setUserToken(token);

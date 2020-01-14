@@ -30,6 +30,7 @@ public class User {
     private Double numberOfCredits;
     private Boolean premium;
     private Integer noOfPrivateAuctions;
+    private Boolean enabled;
     @ToString.Exclude
     @OneToMany
     private List<Bid> bids;
