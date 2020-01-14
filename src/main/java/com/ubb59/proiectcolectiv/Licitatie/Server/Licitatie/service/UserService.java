@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private UserRepository userRepository;
-    @Autowired
     private TokenRepository tokenRepository;
     private AuctionRepository auctionRepository;
     private BidRepository bidRepository;

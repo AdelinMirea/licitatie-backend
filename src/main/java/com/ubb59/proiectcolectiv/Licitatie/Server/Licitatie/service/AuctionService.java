@@ -1,9 +1,12 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Category;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnEndAuctionNotificationEvent;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnRegistrationSuccessEvent;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
@@ -13,6 +16,7 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenExcep
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -32,14 +36,16 @@ public class AuctionService {
     private UserRepository userRepository;
     private DTOUtils dtoUtils;
     private Validator validator;
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, UserRepository userRepository, DTOUtils dtoUtils, Validator validator) {
+    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, UserRepository userRepository, DTOUtils dtoUtils, Validator validator, ApplicationEventPublisher eventPublisher) {
         this.auctionRepository = auctionRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.dtoUtils = dtoUtils;
         this.validator = validator;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<Auction> findAll() {
@@ -90,9 +96,17 @@ public class AuctionService {
 
     public List<Auction> closeAuctionsWithDueDatePassed() {
         List<Auction> closedAuctionList = new ArrayList<>();
-        auctionRepository.findAllByClosed(false).forEach(action -> {
-            if (action.getDueDate().before(new Timestamp(System.currentTimeMillis()))) {
-                closedAuctionList.add(this.closeAction(action));
+        auctionRepository.findAllByClosed(false).forEach(auction -> {
+            if (auction.getDueDate().before(new Timestamp(System.currentTimeMillis()))) {
+                Optional<Bid> winningBid = auction.getBids()
+                        .stream()
+                        .min((bid1, bid2) -> bid2.getOffer().compareTo(bid1.getOffer()));
+                if(winningBid.isPresent()){
+                    auction.setWinningBid(winningBid.get());
+                    eventPublisher.publishEvent(new OnEndAuctionNotificationEvent(auction.getOwner(), auction));
+                }
+                auction.getBids().forEach(bid -> eventPublisher.publishEvent(new OnEndAuctionNotificationEvent(bid.getBidder(), auction)));
+                closedAuctionList.add(this.closeAction(auction));
             }
         });
 

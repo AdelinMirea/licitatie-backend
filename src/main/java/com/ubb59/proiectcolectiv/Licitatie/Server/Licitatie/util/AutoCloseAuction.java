@@ -17,7 +17,7 @@ public class AutoCloseAuction {
     public AutoCloseAuction(AuctionService auctionService) {
         this.auctionService = auctionService;
     }
-    
+
 
     @Scheduled(cron = "0 0/15 * * * *")
     public void autoCloseAuctions() {
