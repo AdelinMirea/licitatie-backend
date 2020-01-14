@@ -2,9 +2,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.VerificationToken;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuthenticationDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UpdatePasswordDTO;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.UserDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.*;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnRegistrationSuccessEvent;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnRegistrationSuccessEvent;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.UserService;
@@ -21,8 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.Calendar;
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
