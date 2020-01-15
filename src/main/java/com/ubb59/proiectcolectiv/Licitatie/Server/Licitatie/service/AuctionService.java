@@ -5,9 +5,11 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Category;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.BidDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnEndAuctionNotificationEvent;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnRegistrationSuccessEvent;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
@@ -24,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,15 +40,17 @@ public class AuctionService {
     private AuctionRepository auctionRepository;
     private CategoryRepository categoryRepository;
     private UserRepository userRepository;
+    private BidRepository bidRepository;
     private DTOUtils dtoUtils;
     private Validator validator;
     private ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, UserRepository userRepository, DTOUtils dtoUtils, Validator validator, ApplicationEventPublisher eventPublisher) {
+    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, UserRepository userRepository, BidRepository bidRepository, DTOUtils dtoUtils, Validator validator, ApplicationEventPublisher eventPublisher) {
         this.auctionRepository = auctionRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.bidRepository = bidRepository;
         this.dtoUtils = dtoUtils;
         this.validator = validator;
         this.eventPublisher = eventPublisher;
@@ -95,6 +102,14 @@ public class AuctionService {
         return auctionRepository.save(action);
     }
 
+    public Bid saveBid(Bid bid) {
+        return bidRepository.save(bid);
+    }
+
+    public Bid saveBid(BidDTO bidDTO) {
+        Bid newBid = dtoUtils.bidDTOToBid(bidDTO);
+        return saveBid(newBid);
+    }
     public List<Auction> closeAuctionsWithDueDatePassed() {
         List<Auction> closedAuctionList = new ArrayList<>();
         auctionRepository.findAllByClosed(false).forEach(auction -> {

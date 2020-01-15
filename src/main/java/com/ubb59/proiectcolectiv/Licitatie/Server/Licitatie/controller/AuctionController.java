@@ -2,6 +2,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller;
 
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.BidDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service.AuctionService;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
@@ -88,5 +89,18 @@ public class AuctionController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/auctions/bid")
+    public ResponseEntity<?> addBid(
+            @RequestParam(name = "bidDTO") BidDTO bidDTO
+    ) {
+        try {
+            auctionService.saveBid(bidDTO);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(bidDTO, HttpStatus.OK);
+    }
+
 
 }
