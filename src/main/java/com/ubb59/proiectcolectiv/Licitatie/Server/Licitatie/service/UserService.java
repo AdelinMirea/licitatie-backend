@@ -1,14 +1,11 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.*;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.TokenRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CommentRepository;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.*;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityExistsException;
@@ -185,6 +182,15 @@ public class UserService {
         if(user.isPresent()){
             return commentRepository.findAllByUser(user.get());
         }else{
+            throw new EntityNotFoundException();
+        }
+    }
+    public List<Comment> getCommentsCreatedByUser(Integer id, Integer page, Integer item) {
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isPresent()) {
+            return commentRepository.findAllByUser(user.get(), PageRequest.of(page, item));
+        } else {
             throw new EntityNotFoundException();
         }
     }
