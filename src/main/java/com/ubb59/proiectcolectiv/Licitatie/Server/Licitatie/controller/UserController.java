@@ -83,7 +83,7 @@ public class UserController {
         }
     }
 
-    @GetMapping({"/users/{token}"})
+    @GetMapping({"/users/token/{token}"})
     public ResponseEntity<UserDTO> getUserByToken(@PathVariable String token) {
         try {
             User user = userService.getUserByToken(token);
