@@ -14,4 +14,6 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findByPost_IdOrderByDatePostedDesc(Integer postId, Pageable of);
     List<Comment> findAllByUser(User user);
+    List<Comment> findAllByUser(User user,Pageable of);
+
 }

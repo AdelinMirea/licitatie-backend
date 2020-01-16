@@ -180,9 +180,10 @@ public class UserController {
     }
 
     @GetMapping({"/users/{id}/comments"})
-    public ResponseEntity<List<CommentDTO>> getCommentsCreatedByUser(@PathVariable Integer id) {
+    public ResponseEntity<List<CommentDTO>> getCommentsCreatedByUserPaginated(@PathVariable Integer id,@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+                                                                              @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber) {
         try {
-            List<CommentDTO> comments = userService.getCommentsCreatedByUser(id)
+            List<CommentDTO> comments = userService.getCommentsCreatedByUser(id,page,itemNumber)
                     .parallelStream().map(dtoUtils::commentToCommentDTO).collect(Collectors.toList());
             return new ResponseEntity<>(comments, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
