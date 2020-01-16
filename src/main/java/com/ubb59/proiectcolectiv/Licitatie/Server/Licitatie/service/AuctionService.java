@@ -142,6 +142,19 @@ public class AuctionService {
                 .collect(Collectors.toList());
     }
 
+    public List<AuctionDTO> findAllEndingPaginated(Integer page, Integer items) {
+        Timestamp timestamp1 = new Timestamp(new Date().getTime());
+        Timestamp timestamp2 = new Timestamp(new Date().getTime());
+        int duration = 24 * 60 * 60 * 1000;
+        timestamp2.setTime(timestamp2.getTime() + duration);
+        List<Auction> auctions = auctionRepository.findByDueDateBetween(timestamp1, timestamp2,PageRequest.of(page,items));
+
+        return auctions
+                .parallelStream()
+                .map(auction -> dtoUtils.auctionToAuctionDTO(auction))
+                .collect(Collectors.toList());
+    }
+
     public AuctionDTO endAuction(Integer id) throws EntityNotFoundException, DataValidationException {
         Auction auction = auctionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Auction does not exist"));
         if(auction.getClosed()){

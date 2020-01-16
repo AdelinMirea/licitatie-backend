@@ -21,4 +21,5 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer> {
     List<Auction> findAllByCategoryIn(List<Category> categories);
     List<Auction> findAllByCategoryIn(List<Category> categories, Pageable of);
     List<Auction> findByDueDateBetween(Timestamp timestamp1, Timestamp timestamp2);
+    List<Auction> findByDueDateBetween(Timestamp timestamp1, Timestamp timestamp2,Pageable of);
 }

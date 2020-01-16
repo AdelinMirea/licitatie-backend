@@ -74,8 +74,9 @@ public class AuctionController {
     }
 
     @GetMapping("/auctions/edge")
-    public ResponseEntity<?> getEndingAuctions() {
-        List<AuctionDTO> auctions = auctionService.findAllEnding();
+    public ResponseEntity<?> getEndingAuctions(@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+                                               @RequestParam(name = "itemNumber", defaultValue = "10", required = false) Integer itemNumber) {
+        List<AuctionDTO> auctions = auctionService.findAllEndingPaginated(page,itemNumber);
         return new ResponseEntity<>(auctions, HttpStatus.OK);
     }
 
