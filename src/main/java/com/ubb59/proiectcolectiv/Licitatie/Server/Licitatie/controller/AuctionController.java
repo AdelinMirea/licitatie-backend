@@ -70,7 +70,7 @@ public class AuctionController {
 
     @PostMapping("/auctions")
     public ResponseEntity<?> add(
-            @ModelAttribute AuctionDTO auctionDTO
+            @RequestParam(name = "auctionDTO") AuctionDTO auctionDTO
     ) {
         try {
             auctionService.save(auctionDTO);

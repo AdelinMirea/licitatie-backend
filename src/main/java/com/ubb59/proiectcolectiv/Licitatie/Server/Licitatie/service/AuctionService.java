@@ -13,7 +13,6 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepos
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.UserRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.DTOUtils;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util.ImageUtils;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.DataValidationException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.TokenException;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.validator.Validator;
@@ -26,10 +25,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -102,10 +102,7 @@ public class AuctionService {
     }
 
     public Auction save(AuctionDTO auction) throws DataValidationException {
-        auction.setId(0);
         Auction newAuction = dtoUtils.auctionDTOToAuction(auction);
-        List<String> fileNames = ImageUtils.saveMultipartFiles(auction.getImages());
-        newAuction.setImageNames(fileNames);
         validator.validateAuction(newAuction);
         return save(newAuction);
     }

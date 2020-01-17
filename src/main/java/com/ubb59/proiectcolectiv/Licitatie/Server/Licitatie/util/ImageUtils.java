@@ -2,16 +2,12 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Base64;
 
 public class ImageUtils {
 
@@ -40,40 +36,9 @@ public class ImageUtils {
         return type.equals("image");
     }
 
-    public static String imageToBase64String(File image) throws IOException {
+    private static String imageToBase64String(File image) throws IOException {
         byte[] fileContent = FileUtils.readFileToByteArray(image);
         return Base64.getEncoder().encodeToString(fileContent);
-    }
-
-    public static File convertMultipartFileToFile(MultipartFile file) throws IOException {
-        File convFile = new File(System.getProperty("java.io.tmpdir")+"/image");
-        file.transferTo(convFile);
-        return convFile;
-    }
-
-    public static List<String> saveMultipartFiles(MultipartFile[] files){
-        List<String> encodedImages =  Arrays.asList(files)
-                .parallelStream()
-                .map(multipartFile -> {
-                    try {
-                        File image = ImageUtils.convertMultipartFileToFile(multipartFile);
-                        return ImageUtils.imageToBase64String(image);
-                    } catch (IOException e) {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        List<String> imageNames = new ArrayList<>();
-        encodedImages.forEach(image -> {
-            try {
-                String fileName = addImage(image);
-                imageNames.add(fileName);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        return imageNames;
     }
 
     private static File base64StringToImage(String encodedImage, String imageName) throws IOException {

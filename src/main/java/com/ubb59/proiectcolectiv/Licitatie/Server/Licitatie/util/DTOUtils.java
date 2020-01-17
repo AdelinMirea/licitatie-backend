@@ -8,13 +8,11 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityExistsException;
 import java.io.IOException;
-import java.security.acl.Owner;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -141,19 +139,20 @@ public class DTOUtils {
         }
     }
 
+
+    /**
+     * Finds auction with the same id as auctionDTO, updates the other fields and returns it.
+     * If there is no auction with such id, returns @null.
+     */
     public Auction auctionDTOToAuction(AuctionDTO auctionDTO) {
-        Optional<Auction> auctionOptional = auctionRepository.findById(auctionDTO.getId());
-        Auction auction = new Auction();
-        if (auctionOptional.isPresent()) {
-            auction = auctionOptional.get();
+        Auction auction = auctionRepository.getOne(auctionDTO.getId());
+        if (auction == null) {
+            return null;
         }
-        Optional<User> ownerOptional = userRepository.findById(auctionDTO.getOwnerId());
-        Optional<Bid> winningBidOptional = bidRepository.findById(auctionDTO.getWinningBidId());
-        Optional<Category> categoryOptional = categoryRepository.findById(auctionDTO.getCategoryId());
+        User owner = userRepository.getOne(auctionDTO.getOwnerId());
+        Bid winningBid = bidRepository.getOne(auctionDTO.getWinningBidId());
+        Category category = categoryRepository.getOne(auctionDTO.getCategoryId());
         List<Bid> bids = bidRepository.findAllById(auctionDTO.getBidsIds());
-        Bid winningBid = winningBidOptional.orElse(null);
-        Category category = categoryOptional.orElse(null);
-        User owner = ownerOptional.orElse(null);
         auction = updateAuctionByAuctionDTO(auction, auctionDTO, owner, winningBid, category, bids);
         return auction;
     }
