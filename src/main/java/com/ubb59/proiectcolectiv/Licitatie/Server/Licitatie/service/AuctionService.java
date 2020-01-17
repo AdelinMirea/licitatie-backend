@@ -56,6 +56,14 @@ public class AuctionService {
         this.eventPublisher = eventPublisher;
     }
 
+    public AuctionDTO findAuction(Integer auctionId) throws Exception {
+        Optional<Auction> auctionOptional = this.auctionRepository.findById(auctionId);
+        if(auctionOptional.isPresent()){
+            return this.dtoUtils.auctionToAuctionDTO(auctionOptional.get());
+        }
+        throw new Exception("There is no auction with that id");
+    }
+
     public List<Auction> findAll() {
         return this.auctionRepository.findAll();
     }
