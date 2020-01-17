@@ -1,5 +1,6 @@
 package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.service;
 
+import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.controller.WebSocketController;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Auction;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Bid;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.Category;
@@ -7,7 +8,6 @@ import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.domain.User;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.AuctionDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto.BidDTO;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnEndAuctionNotificationEvent;
-import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.event.OnRegistrationSuccessEvent;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.AuctionRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.BidRepository;
 import com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.persistance.CategoryRepository;
@@ -44,9 +44,10 @@ public class AuctionService {
     private DTOUtils dtoUtils;
     private Validator validator;
     private ApplicationEventPublisher eventPublisher;
+    private WebSocketController webSocketController;
 
     @Autowired
-    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, UserRepository userRepository, BidRepository bidRepository, DTOUtils dtoUtils, Validator validator, ApplicationEventPublisher eventPublisher) {
+    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository, UserRepository userRepository, BidRepository bidRepository, DTOUtils dtoUtils, Validator validator, ApplicationEventPublisher eventPublisher, WebSocketController webSocketController) {
         this.auctionRepository = auctionRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
@@ -54,6 +55,7 @@ public class AuctionService {
         this.dtoUtils = dtoUtils;
         this.validator = validator;
         this.eventPublisher = eventPublisher;
+        this.webSocketController = webSocketController;
     }
 
     public List<Auction> findAll() {
@@ -103,11 +105,13 @@ public class AuctionService {
     }
 
     public Bid saveBid(Bid bid) {
+        this.webSocketController.sendPriceChangeMessage(bid.getAuction().getId(), bid.getOffer());
         return bidRepository.save(bid);
     }
 
     public Bid saveBid(BidDTO bidDTO) {
         Bid newBid = dtoUtils.bidDTOToBid(bidDTO);
+        this.webSocketController.sendPriceChangeMessage(newBid.getAuction().getId(), newBid.getOffer());
         return saveBid(newBid);
     }
     public List<Auction> closeAuctionsWithDueDatePassed() {
