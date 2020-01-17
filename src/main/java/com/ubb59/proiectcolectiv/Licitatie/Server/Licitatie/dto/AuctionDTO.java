@@ -3,6 +3,7 @@ package com.ubb59.proiectcolectiv.Licitatie.Server.Licitatie.dto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -25,4 +26,5 @@ public class AuctionDTO {
     private Integer ownerId;
     private Integer categoryId;
     private List<String> encodedImages;
+    private MultipartFile[] images;
 }
