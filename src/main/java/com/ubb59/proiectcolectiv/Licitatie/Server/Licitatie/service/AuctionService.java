@@ -107,9 +107,10 @@ public class AuctionService {
         return save(newAuction);
     }
 
-    public Auction closeAction(Auction action) {
-        action.setClosed(true);
-        return auctionRepository.save(action);
+    public Auction closeAction(Auction auction) {
+        auction.setClosed(true);
+        this.webSocketController.sendAuctionClosedMessage(auction.getId());
+        return auctionRepository.save(auction);
     }
 
     public Bid saveBid(Bid bid) {

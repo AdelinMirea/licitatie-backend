@@ -15,7 +15,13 @@ public class WebSocketController {
 
     @SendTo("/topic/auction/bid-changed/{auctionId}")
     public Double sendPriceChangeMessage(Integer auctionId, Double newBidOffer){
-        this.simpMessagingTemplate.convertAndSend("topic/auction/bid-changed/"+auctionId, newBidOffer);
+        this.simpMessagingTemplate.convertAndSend("/topic/auction/bid-changed/"+auctionId, newBidOffer);
         return newBidOffer;
+    }
+
+    @SendTo("/topic/auction/closed/{auctionId}")
+    public String sendAuctionClosedMessage(Integer auctionId){
+        this.simpMessagingTemplate.convertAndSend("/topic/auction/closed/"+auctionId, "closed");
+        return "closed";
     }
 }
