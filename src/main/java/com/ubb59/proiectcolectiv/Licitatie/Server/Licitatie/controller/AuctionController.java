@@ -28,6 +28,15 @@ public class AuctionController {
         this.auctionService = auctionService;
     }
 
+    @GetMapping("/auctions/{id}")
+    public ResponseEntity<?> getAuction(@PathVariable Integer id){
+        try {
+            return new ResponseEntity<>(this.auctionService.findAuction(id), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/auctions")
     public ResponseEntity<?> getAllAuctions(
             @RequestParam(name = "sortBy", defaultValue = "dateAdded", required = false) String sortBy,
