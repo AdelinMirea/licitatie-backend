@@ -179,4 +179,11 @@ public class AuctionService {
         auction.setClosed(true);
         return dtoUtils.auctionToAuctionDTO(auctionRepository.save(auction));
     }
+    public List<BidDTO>getBidsByAuction(AuctionDTO auctionDTO){
+        Auction auction=dtoUtils.auctionDTOToAuction(auctionDTO);
+        List<Bid>bids=bidRepository.findAllByAuction(auction);
+        return  bids   .parallelStream()
+                .map(bid -> dtoUtils.bidToBidDTO(bid))
+                .collect(Collectors.toList());
+    }
 }

@@ -217,9 +217,10 @@ public class DTOUtils {
 
 
     public Bid bidDTOToBid(BidDTO bidDTO) {
-        Bid bid = bidRepository.getOne(bidDTO.getId());
-        if (bid == null) {
-            return null;
+        Optional<Bid> bidOptional = bidRepository.findById(bidDTO.getId());
+        Bid bid = new Bid();
+        if (bidOptional.isPresent()) {
+            bid = bidOptional.get();
         }
         User bidder = userRepository.getOne(bidDTO.getBidderId());
         Auction auction = auctionRepository.getOne(bidDTO.getAuctionId());
