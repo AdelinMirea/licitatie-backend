@@ -70,7 +70,7 @@ public class AuctionController {
 
     @PostMapping("/auctions")
     public ResponseEntity<?> add(
-            @ModelAttribute AuctionDTO auctionDTO
+            @RequestBody AuctionDTO auctionDTO
     ) {
         try {
             auctionService.save(auctionDTO);
@@ -102,7 +102,7 @@ public class AuctionController {
 
     @PostMapping("/auctions/bid")
     public ResponseEntity<?> addBid(
-            @RequestParam(name = "bidDTO") BidDTO bidDTO
+            @RequestBody BidDTO bidDTO
     ) {
         try {
             auctionService.saveBid(bidDTO);

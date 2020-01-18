@@ -104,8 +104,8 @@ public class AuctionService {
     public Auction save(AuctionDTO auction) throws DataValidationException {
         auction.setId(0);
         Auction newAuction = dtoUtils.auctionDTOToAuction(auction);
-        List<String> fileNames = ImageUtils.saveMultipartFiles(auction.getImages());
-        newAuction.setImageNames(fileNames);
+//        List<String> fileNames = ImageUtils.saveMultipartFiles(auction.getImages());
+//        newAuction.setImageNames(fileNames);
         validator.validateAuction(newAuction);
         return save(newAuction);
     }
