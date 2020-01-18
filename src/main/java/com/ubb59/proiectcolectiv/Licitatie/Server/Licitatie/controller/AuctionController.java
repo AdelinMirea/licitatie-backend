@@ -111,6 +111,15 @@ public class AuctionController {
         }
         return new ResponseEntity<>(bidDTO, HttpStatus.OK);
     }
-
+    @GetMapping({"/auction/bids/{auctionId}"})
+    public ResponseEntity<List<BidDTO>> getBidsByAuctionId(@PathVariable Integer auctionId) {
+        try {
+            AuctionDTO auction=auctionService.findAuction(auctionId);
+            List<BidDTO>bidDTOS=auctionService.getBidsByAuction(auction);
+            return new ResponseEntity<>(bidDTOS, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }
